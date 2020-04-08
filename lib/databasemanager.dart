@@ -1,0 +1,5 @@
+library databasemigrations;
+
+class Migrate {
+
+}
