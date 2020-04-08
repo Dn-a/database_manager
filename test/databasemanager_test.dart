@@ -13,6 +13,9 @@ void main() {
     Schema.create(tableName: 'prova', callback: (Blueprint table) {
       table.string('title').unique();
       table.string('column').unique();
+      table.integer('suca').unsigned()
+      .autoIncrement();
+      //.defaultValue(value: 1);
       /*print(
           table.integer('suca').unsigned()
           //.nullable()

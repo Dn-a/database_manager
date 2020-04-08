@@ -14,7 +14,6 @@ class Blueprint {
     return _columns;
   }
 
-
   ColumnDefinition _addColumn({String type, String name, Map<String,dynamic> parameters}){
     ColumnDefinition columnDefinition = ColumnDefinition(type: type, name: name, parameters: parameters);
     _columns.add(columnDefinition);
