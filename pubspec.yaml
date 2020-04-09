@@ -1,8 +1,8 @@
-name: databasemanager
+name: database_manager
 description: Simple way to manage database.
 version: 0.0.1
-author:
-homepage:
+author: Antonino Di Natale <gyorgio88@gmail.com>
+homepage: https://github.com/Dn-a/database_manager
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

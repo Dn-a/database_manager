@@ -8,21 +8,21 @@ typedef SchemaCallback = void Function(Blueprint table);
 
 class Schema {
 
-  static Map<String,List<ColumnDefinition>> _tables = {};
+  static Map<String,String> _tablesSQL = {};
 
-  static Map<String,List<ColumnDefinition>> getTables(){
-    return _tables;
+  static Map<String,String> getTablesSQL(){
+    return _tablesSQL;
   }
 
   static create({ @required String tableName, @required SchemaCallback callback }){
 
       Blueprint table = Blueprint();
       callback(table);
-
       _addNewTable(name: tableName, columns: table.getColumns());
+
   }
 
-  static table(){
+  static table({@required String tableName}){
 
   }
 
@@ -31,11 +31,17 @@ class Schema {
   }
 
   static void _addNewTable({String name, List<ColumnDefinition> columns}){
-    bool check =  !_tables.containsKey(name);
+    bool check =  !_tablesSQL.containsKey(name);
     assert(check ? true : throw "Table $name already exists" );
 
-    if(check)
-      _tables.addAll({name:columns});
+//    if(check){
+      final StringBuffer sql = StringBuffer('CREATE IF NOT EXISTS `$name` (\n');
+
+      columns.forEach( (c) => sql.writeln(c.getSQL()) );
+      sql.writeln(')');
+
+      _tablesSQL.addAll({name:sql.toString()});
+//    }
   }
 
 }

@@ -1,5 +1,5 @@
-import 'package:databasemanager/src/schema/blueprint.dart';
-import 'package:databasemanager/src/schema/schema.dart';
+import 'package:database_manager/src/schema/blueprint.dart';
+import 'package:database_manager/src/schema/schema.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -12,27 +12,12 @@ void main() {
 
     Schema.create(tableName: 'prova', callback: (Blueprint table) {
       table.string('title').unique();
-      table.string('column').unique();
-      table.integer('suca').unsigned()
-      .autoIncrement();
-      //.defaultValue(value: 1);
-      /*print(
-          table.integer('suca').unsigned()
-          //.nullable()
-          //.defaultValue(value: 1)
-          .getSQL()
-      );*/
+      table.string('column').unique().nullable();
+      table.integer('suca').autoIncrement();
     });
 
-    Map<String,List> aa =  Schema.getTables();
-    aa['prova'].forEach( (f) => print(f.getSQL()));
+    Map<String,String> aa =  Schema.getTablesSQL();
+    print( aa['prova'] );
   });
 
-  /*test('adds one to input values', () {
-    final calculator = Calculator();
-    expect(calculator.addOne(2), 3);
-    expect(calculator.addOne(-7), -6);
-    expect(calculator.addOne(0), 1);
-    expect(() => calculator.addOne(null), throwsNoSuchMethodError);
-  });*/
 }

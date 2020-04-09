@@ -26,10 +26,30 @@ class ColumnDefinition{
   }*/
 
   String getSQL(){
+    String msg = 'Length must be a positive integer greater than one';
+    assert( _parameters['length']!=null && _parameters['length'] <= 0 ? throw msg : true );
+
     final String notNull = _defaultValue.contains('NULL') ? 'DEFAULT' : 'NOT NULL DEFAULT';
     final String defaultValue = _defaultValue.length> 0 ? "$notNull ${_defaultValue[0]}": 'NOT NULL';
-    final String sql = "`$_name` $_type(${_parameters['length']}) $_unsigned $defaultValue $_autoincrement";
-    return sql;
+
+    final StringBuffer sql = StringBuffer("`$_name` $_type");
+
+    if(_parameters['length']!=null)
+      sql.write( '(${_parameters['length']})' );
+
+    if(_unsigned.isNotEmpty)
+      sql.write( ' $_unsigned' );
+    else if(_parameters['unsigned']!=null && _parameters['unsigned'])
+      sql.write( ' unsigned' );
+
+    sql.write( ' $defaultValue' );
+
+    if(_autoincrement.isNotEmpty)
+      sql.write( ' $_autoincrement' );
+    else if(_parameters['autoincrement']!=null && _parameters['autoincrement'])
+      sql.write( ' AUTOINCREMENT' );
+
+    return sql.toString();
   }
 
 
@@ -60,7 +80,7 @@ class ColumnDefinition{
   /// Property
   ColumnDefinition autoIncrement(){
     String msg = 'AutoIncrement only works on numbers';
-    assert( _type=='TINYINT' || _type=='SMALLINT' || _type=='MEDIUMINT' || _type=='BIGINT' ||  _type=='INTEGER' ? true : throw msg );
+    assert( _type=='TINYINT' || _type=='SMALLINT' || _type=='MEDIUMINT' || _type=='BIGINT' ||  _type=='INTEGER' || _type=='NUMBER' ? true : throw msg );
      _autoincrement = 'AUTOINCREMENT';
     return this;
   }
@@ -68,7 +88,7 @@ class ColumnDefinition{
   /// Property
   ColumnDefinition unsigned(){
     String msg = 'Unsigned only works on numbers';
-    assert( _type=='TINYINT' || _type=='SMALLINT' || _type=='MEDIUMINT' || _type=='BIGINT' ||  _type=='INTEGER' ? true : throw msg );
+    assert( _type=='TINYINT' || _type=='SMALLINT' || _type=='MEDIUMINT' || _type=='BIGINT' ||  _type=='INTEGER' || _type=='NUMBER' ? true : throw msg );
     _unsigned = 'unsigned';
     return this;
   }
