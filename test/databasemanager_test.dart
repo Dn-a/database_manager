@@ -6,18 +6,19 @@ void main() {
 
   test('adds one to input values', ()
   {
-    /*Map<String,List<List>> _tables = {'suca':[]};
-    String name = 'suca';
-    assert(!_tables.containsKey(name) ? true : throw "Table ${name} already exists" ); return;*/
 
     Schema.create(tableName: 'prova', callback: (Blueprint table) {
+      table.integer('id').autoIncrement();
       table.string('title').unique();
-      table.string('column').unique().nullable();
-      table.integer('suca').autoIncrement();
+      table.string('column1').unique().nullable();
     });
 
-    Map<String,String> aa =  Schema.getTablesSQL();
-    print( aa['prova'] );
+    Schema.table(tableName: 'prova', callback: (Blueprint table) {
+      table.foreign(columns: ['title']).references(idList: ['id']).on(tableName: 'table').onDelete(action: 'restrict');
+    });
+
+    String sqlString =  Schema.getSQL(tableName: 'prova');
+    print( sqlString );
   });
 
 }

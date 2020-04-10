@@ -2,22 +2,36 @@
 import 'package:flutter/cupertino.dart';
 
 import 'column_definition.dart';
+import 'package:database_manager/src/schema/sql_command.dart';
 
 class Blueprint {
 
-//  final String _tableName;
-//  Blueprint({@required String tableName}): this._tableName = tableName;
   static const int _defaultStringLength = 255;
   final List<ColumnDefinition> _columns = List();
+  final List<SQLCommand> _commands = [];
 
   List<ColumnDefinition> getColumns(){
     return _columns;
+  }
+
+  List<SQLCommand> getCommands(){
+    return _commands;
   }
 
   ColumnDefinition _addColumn({String type, String name, Map<String,dynamic> parameters}){
     ColumnDefinition columnDefinition = ColumnDefinition(type: type, name: name, parameters: parameters);
     _columns.add(columnDefinition);
     return columnDefinition;
+  }
+
+  SQLCommand _addCommand({String name, Map<String,dynamic> parameters}){
+    SQLCommand sqlCommand = SQLCommand(name: name, parameters: parameters);
+    _commands.add(sqlCommand);
+    return sqlCommand;
+  }
+
+  SQLCommand _indexCommand({String type, List<String> columns, String indexName }){
+    return _addCommand(name: type, parameters: { 'indexName':indexName, 'columns': columns });
   }
 
   ColumnDefinition char(String name, {int length = _defaultStringLength }){
@@ -55,7 +69,7 @@ class Blueprint {
     return _addColumn(type: 'BIGINT', name: name, parameters: {'autoincrement': autoincrement, 'unsigned': unsigned} );
   }
 
-  /*ColumnDefinition unsignedInteger(String name, {bool autoincrement = false}){
+  ColumnDefinition unsignedInteger(String name, {bool autoincrement = false}){
     return integer(name, autoincrement: autoincrement, unsigned: true );
   }
 
@@ -73,7 +87,7 @@ class Blueprint {
 
   ColumnDefinition unsignedBigInteger(String name, {bool autoincrement = false}){
     return bigInteger(name, autoincrement: autoincrement, unsigned: true );
-  }*/
+  }
 
   ColumnDefinition float(String name){
     return _addColumn(type: 'FLOAT', name: name,
@@ -110,27 +124,39 @@ class Blueprint {
   }
 
   ColumnDefinition increments(String name){
-    return integer(name, autoincrement: true);
+    return unsignedInteger(name, autoincrement: true).primary();
   }
 
   ColumnDefinition tinyIncrements(String name){
-    return tinyInteger(name, autoincrement: true);
+    return unsignedTinyInteger(name, autoincrement: true);
   }
 
   ColumnDefinition smallIncrements(String name){
-    return smallInteger(name, autoincrement: true);
+    return unsignedSmallInteger(name, autoincrement: true);
   }
 
   ColumnDefinition mediumIncrements(String name){
-    return mediumInteger(name, autoincrement: true);
+    return unsignedMediumInteger(name, autoincrement: true);
   }
 
   ColumnDefinition bigIncrements(String name){
-    return bigInteger(name, autoincrement: true);
+    return unsignedBigInteger(name, autoincrement: true);
   }
 
+  SQLCommand primary( {@required List<String> columns, String indexName} ){
+    return _indexCommand(type: 'PRIMARY', columns: columns, indexName: indexName );
+  }
 
+  SQLCommand unique( {@required List<String> columns, String indexName} ){
+    return _indexCommand(type: 'UNIQUE', columns: columns, indexName: indexName );
+  }
 
+  SQLCommand index( {@required List<String> columns, String indexName} ){
+    return _indexCommand(type: 'INDEX', columns: columns, indexName: indexName );
+  }
 
+  SQLCommand foreign( {@required List<String> columns, String indexName} ){
+    return _indexCommand(type: 'FOREIGN', columns: columns, indexName: indexName );
+  }
 
 }

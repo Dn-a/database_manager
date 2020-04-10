@@ -2,46 +2,71 @@
 import 'package:flutter/foundation.dart';
 
 import 'blueprint.dart';
-import 'column_definition.dart';
 
 typedef SchemaCallback = void Function(Blueprint table);
 
 class Schema {
 
-  static Map<String,String> _tablesSQL = {};
+  static Map<String,Blueprint> _tables = {};
 
-  static Map<String,String> getTablesSQL(){
-    return _tablesSQL;
+  /// Returns SQL from a single table
+  static String getSQL({@required String tableName}){
+    assert(_tables[tableName]!=null ? true : throw "The $tableName table does not exist");
+
+    return _generateSQLTable(tableName: tableName);
   }
 
   static create({ @required String tableName, @required SchemaCallback callback }){
 
-      Blueprint table = Blueprint();
-      callback(table);
-      _addNewTable(name: tableName, columns: table.getColumns());
+    Blueprint table = Blueprint();
+    callback(table);
+
+    _addTable(tableName: tableName, table: table );
 
   }
 
-  static table({@required String tableName}){
+  static table({@required String tableName, @required SchemaCallback callback}){
+    assert( _tables[tableName]!=null ? true : throw "The $tableName table does not exist" );
+
+    Blueprint table = _tables[tableName];
+    callback(table);
+  }
+
+  static dropIfExists({String tableName}){
 
   }
 
-  static dropIfExists(){
+  static void _addTable({String tableName, Blueprint table}){
+    final bool check =  !_tables.containsKey(tableName);
+    assert(check ? true : throw "Table $tableName already exists" );
 
+    _tables.addAll(
+        {
+          tableName : table
+        }
+    );
   }
 
-  static void _addNewTable({String name, List<ColumnDefinition> columns}){
-    bool check =  !_tablesSQL.containsKey(name);
-    assert(check ? true : throw "Table $name already exists" );
+  static String _generateSQLTable({ String tableName }){
 
-//    if(check){
-      final StringBuffer sql = StringBuffer('CREATE IF NOT EXISTS `$name` (\n');
+    final Blueprint table = _tables[tableName];
 
-      columns.forEach( (c) => sql.writeln(c.getSQL()) );
-      sql.writeln(')');
+    final StringBuffer sql = StringBuffer();
 
-      _tablesSQL.addAll({name:sql.toString()});
-//    }
+    sql.writeln('CREATE IF NOT EXISTS `$tableName` (');
+    table.getColumns().forEach( (column) =>
+        sql.writeln( column.getSQLColumn() )
+    );
+    table.getColumns().forEach( (column) {
+      if(column.getSQLCommand().isNotEmpty)
+        sql.writeln( column.getSQLCommand() );
+    });
+    table.getCommands().forEach( (command) {
+      sql.writeln( command.getSQL() );
+    });
+    sql.writeln(')');
+
+    return sql.toString();
   }
 
 }

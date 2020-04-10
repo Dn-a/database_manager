@@ -20,53 +20,49 @@ class ColumnDefinition{
   String _unsigned = '';
   String _autoincrement = '';
   final List<String> _defaultValue = [];
+  final List<String> _indexCommand = [];
 
+  final String _defaultValueAssertMsg  = 'be sure to use only one of the following parameters: nullable, defaultValue, useCurrent, autoIncrement';
+  final String _indexCommandAssertMsg  = 'You can only have one KEY';
 
-  /*List<String> _getUniqueProperties(){
-  }*/
-
-  String getSQL(){
-    String msg = 'Length must be a positive integer greater than one';
-    assert( _parameters['length']!=null && _parameters['length'] <= 0 ? throw msg : true );
-
+  String getSQLColumn(){
     final String notNull = _defaultValue.contains('NULL') ? 'DEFAULT' : 'NOT NULL DEFAULT';
     final String defaultValue = _defaultValue.length> 0 ? "$notNull ${_defaultValue[0]}": 'NOT NULL';
 
-    final StringBuffer sql = StringBuffer("`$_name` $_type");
+    final StringBuffer sql = StringBuffer();
+    
+    sql.write("`$_name` $_type");
+    
+    if(_getParameter(name: 'length').isNotEmpty)
+      sql.write( '(${_getParameter(name: 'length')})' );
 
-    if(_parameters['length']!=null)
-      sql.write( '(${_parameters['length']})' );
-
-    if(_unsigned.isNotEmpty)
-      sql.write( ' $_unsigned' );
-    else if(_parameters['unsigned']!=null && _parameters['unsigned'])
-      sql.write( ' unsigned' );
+    if(_getParameter(name: 'unsigned').isNotEmpty)
+      sql.write( ' ${_getParameter(name: 'unsigned')}' );
 
     sql.write( ' $defaultValue' );
 
-    if(_autoincrement.isNotEmpty)
-      sql.write( ' $_autoincrement' );
-    else if(_parameters['autoincrement']!=null && _parameters['autoincrement'])
-      sql.write( ' AUTOINCREMENT' );
+    if(_getParameter(name: 'autoincrement').isNotEmpty)
+      sql.write( ' ${_getParameter(name: 'autoincrement')}' );
 
     return sql.toString();
   }
 
+  String getSQLCommand(){
+    return _indexCommand.length > 0 ?_indexCommand.first : '';
+  }
 
   /// Property - default value
   ColumnDefinition nullable({bool value = true}){
     if(value)
       _defaultValue.add('NULL');
-    String msg = 'be sure to use only one of the following parameters: nullable, defaultValue, useCurrent, autoIncrement';
-    assert( _defaultValue.length > 1 || _autoincrement!='' ? throw msg : true );
+    assert( _defaultValue.length > 1 || _autoincrement!='' ? throw _defaultValueAssertMsg : true );
     return this;
   }
 
   /// Property - default value
   ColumnDefinition defaultValue({@required dynamic value }){
     _defaultValue.add("'$value'");
-    String msg = 'be sure to use only one of the following parameters: nullable, defaultValue, useCurrent, autoIncrement';
-    assert( _defaultValue.length > 1 || _autoincrement!='' ? throw msg : true );
+    assert( _defaultValue.length > 1 || _autoincrement!='' ? throw _defaultValueAssertMsg : true );
     return this;
   }
 
@@ -82,6 +78,7 @@ class ColumnDefinition{
     String msg = 'AutoIncrement only works on numbers';
     assert( _type=='TINYINT' || _type=='SMALLINT' || _type=='MEDIUMINT' || _type=='BIGINT' ||  _type=='INTEGER' || _type=='NUMBER' ? true : throw msg );
      _autoincrement = 'AUTOINCREMENT';
+     primary();
     return this;
   }
 
@@ -93,26 +90,50 @@ class ColumnDefinition{
     return this;
   }
 
-  final List<String> _keys = [];
+  /// Key
+  ColumnDefinition primary(){
+    String sql = 'PRIMARY KEY (`$_name`)';
+    _indexCommand.add( sql );
+    assert( _indexCommand.length > 1 ? throw _indexCommandAssertMsg : true );
+    return this;
+  }
+
   /// key
   ColumnDefinition unique(){
-    String sql = 'UNIQUE KEY `{$_name}_unique` (`{$_name}`)';
-    _keys.add(sql);
+    String sql = 'UNIQUE KEY `${_name}_unique` (`$_name`)';
+    _indexCommand.add( sql );
+    assert( _indexCommand.length > 1 ? throw _indexCommandAssertMsg : true );
     return this;
   }
 
   /// Key
   ColumnDefinition index({String indexName = ''}){
-    String sql = 'KEY `${_name}_$indexName` (`{$_name}`)';
-    _keys.add(sql);
+    String sql = 'KEY `${_name}_$indexName` (`$_name`)';
+    _indexCommand.add( sql );
+    assert( _indexCommand.length > 1 ? throw _indexCommandAssertMsg : true );
     return this;
   }
 
-  /// Key
-  ColumnDefinition primary(){
-    String sql = 'PRIMARY KEY (`{$_name}`)';
-    _keys.add(sql);
-    return this;
+  String _getParameter({@required String name}){
+    String str = '';
+
+    switch(name){
+      case 'autoincrement':
+        if(_autoincrement.isNotEmpty || (_parameters['autoincrement']!=null && _parameters['autoincrement']))
+          str = 'AUTOINCREMENT';
+        break;
+      case 'unsigned':
+        if(_unsigned.isNotEmpty || (_parameters['unsigned']!=null && _parameters['unsigned']) )
+          str = 'UNSIGNED';
+        break;
+      case 'length':
+        String msg = 'Length must be a positive integer > 0 ';
+        assert( _parameters['length']!=null && _parameters['length'] <= 0 ? throw msg : true );
+        if( _parameters['length']!=null )
+          str = _parameters['length'].toString();
+    }
+
+    return str;
   }
 
 }

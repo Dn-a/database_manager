@@ -1,3 +1,9 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.2] - 2020-04-10.
 
-* TODO: Describe initial release.
+* Created SQLCommand.
+* Created Defined Schema Class.
+* refactoring.
+
+## [0.0.1] - 2020-04-9.
+
+* Created Database Manager.
