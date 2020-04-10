@@ -1,4 +1,4 @@
-library databasemigrations;
+library database_manager;
 
 class Migrate {
 
