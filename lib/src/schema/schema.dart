@@ -15,6 +15,7 @@ class Schema {
     return _generateSql(tableName: tableName);
   }
 
+  /// Returns SQL from all table
   static String getSQLAllTable(){
     return _generateSqlFromAllTable();
   }
