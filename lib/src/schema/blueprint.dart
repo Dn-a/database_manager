@@ -159,4 +159,7 @@ class Blueprint {
     return _indexCommand(type: 'FOREIGN', columns: columns, indexName: indexName );
   }
 
+  SQLCommand drop( {@required String tableName} ){
+    return _addCommand(name: 'DROP', parameters: {'tableName' : tableName} );
+  }
 }

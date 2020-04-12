@@ -8,12 +8,25 @@ typedef SchemaCallback = void Function(Blueprint table);
 class Schema {
 
   static Map<String,Blueprint> _tables = {};
+  static Map<String,String> _dropTables = {};
 
   /// Returns SQL from a single table
   static String getSQL({@required String tableName}){
-    assert(_tables[tableName]!=null ? true : throw "The $tableName table does not exist");
+    return _generateSql(tableName: tableName);
+  }
 
-    return _generateSQLTable(tableName: tableName);
+  static String getSQLAllTable(){
+    return _generateSqlFromAllTable();
+  }
+
+  static List<String> getSQLList(){
+    return _generateSqlList();
+  }
+
+  static List<String> getAllDropSQL(){
+    final List<String> list = [];
+    _dropTables.forEach((name,sql) => list.add(sql));
+    return list;
   }
 
   static create({ @required String tableName, @required SchemaCallback callback }){
@@ -33,8 +46,16 @@ class Schema {
   }
 
   static dropIfExists({String tableName}){
+    final bool check =  _tables.containsKey(tableName);
+    assert(check ? true : throw "The $tableName table does not exist" );
 
+    _dropTables.addAll(
+        {
+          tableName : _generateSQLDropTable(tableName: tableName)
+        }
+    );
   }
+
 
   static void _addTable({String tableName, Blueprint table}){
     final bool check =  !_tables.containsKey(tableName);
@@ -47,9 +68,11 @@ class Schema {
     );
   }
 
-  static String _generateSQLTable({ String tableName }){
+  static String _generateSql({ String tableName }){
 
     final Blueprint table = _tables[tableName];
+
+    assert( table!=null ? true : throw "The $tableName table does not exist");
 
     final StringBuffer sql = StringBuffer();
 
@@ -65,6 +88,37 @@ class Schema {
       sql.writeln( command.getSQL() );
     });
     sql.writeln(')');
+
+    return sql.toString();
+  }
+
+  /// Generate single String from all tables
+  static String _generateSqlFromAllTable(){
+    final StringBuffer sqlString = StringBuffer();
+
+    _tables.forEach((name, table)  {
+      sqlString.writeln( _generateSql(tableName: name) );
+    });
+    _tables.clear();
+    return sqlString.toString();
+  }
+
+  /// Generate SQL List from all tables
+  static List<String> _generateSqlList(){
+    final List<String> list = [];
+
+    _tables.forEach((name, table)  {
+      list.add( _generateSql(tableName: name) );
+    });
+    _tables.clear();
+    return list;
+  }
+
+  static String _generateSQLDropTable({ String tableName }){
+
+    final StringBuffer sql = StringBuffer();
+
+    sql.writeln('DROP $tableName IF EXISTS');
 
     return sql.toString();
   }

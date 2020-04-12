@@ -33,6 +33,9 @@ class SQLCommand {
       case 'FOREIGN':
         return _foreignGenerator();
         break;
+      case 'DROP':
+        return _dropGenerator();
+        break;
       default:
         return '';
     }
@@ -89,41 +92,42 @@ class SQLCommand {
     return str.toString();
   }
 
-  SQLCommand references({List<String> idList}){
+  String _dropGenerator(){
+    var tableName = _parameters['tableName']!=null ? _parameters['tableName'] : '';
+    StringBuffer str = StringBuffer();
+
+    str.write('DROP $tableName IF EXISTS');
+
+    return str.toString();
+  }
+
+  SQLCommand references({@required List<String> idList}){
     _references = _argsGeneratorFromList(idList);
     return this;
   }
 
-  SQLCommand on({String tableName}){
+  SQLCommand on({@required String tableName}){
     _on = tableName;
     return this;
   }
 
   SQLCommand onDelete({String action}){
     action = action.toLowerCase();
-    String type = 'ON DELETE';
-    switch(action){
-      case 'set default':
-        type += ' SET DEFAULT';
-        break;
-      case 'set null':
-        type += ' SET NULL';
-        break;
-      case 'cascade':
-        type += ' CASCADE';
-        break;
-      case 'no action':
-      case 'restrict':
-      default:
-        type = '';
-    }
-    _onUpdate = type;
+    String type = _onAction(action: action, actionType: 'delete');
+    _onDelete = type;
     return this;
   }
 
   SQLCommand onUpdate({String action}){
     action = action.toLowerCase();
-    String type = 'ON UPDATE';
+    String type = _onAction(action: action, actionType: 'update');
+    _onUpdate = type;
+    return this;
+  }
+
+  String _onAction({String action, String actionType}){
+    action = action.toLowerCase();
+    String type = actionType =='update' ? 'ON UPDATE' : 'ON DELETE';
     switch(action){
       case 'set default':
         type += ' SET DEFAULT';
@@ -139,8 +143,7 @@ class SQLCommand {
       default:
         type = '';
     }
-    _onDelete = type;
-    return this;
+    return type;
   }
 
   String _argsGeneratorFromList(List<String> list){

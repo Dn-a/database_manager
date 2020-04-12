@@ -1,5 +1,6 @@
 library database_manager;
 
-class Migrate {
-
-}
+export 'src/schema/schema.dart';
+export 'src/schema/blueprint.dart';
+export 'src/migration_interface.dart';
+export 'src/migrate.dart';
