@@ -1,8 +1,6 @@
-
 import 'package:flutter/foundation.dart';
 
-abstract class Migration{
-
+abstract class Migration {
   /// run the migrations
   @required
   void up();

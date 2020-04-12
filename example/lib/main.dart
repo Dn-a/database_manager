@@ -13,7 +13,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Flutter Demo Migration'),
@@ -35,17 +34,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-     
       _counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-   
     return Scaffold(
       appBar: AppBar(
-       
         title: Text(widget.title),
       ),
       body: Container(
@@ -76,8 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  String _migrate(){
-
+  String _migrate() {
     Migrate migrate = Migrate([
       Table1(),
       Table2(),
@@ -87,5 +82,4 @@ class _MyHomePageState extends State<MyHomePage> {
     //print(migrate.create());
     return sqlString;
   }
-
 }
