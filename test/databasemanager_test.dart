@@ -10,12 +10,12 @@ void main() {
 
     Migrate migrate = Migrate([
       Table1(),
-      Table2(),
+      //Table2(),
     ]);
 
     print(migrate.create());
 
-    print(migrate.drop());
+    //print(migrate.drop());
 
   });
 }
@@ -27,8 +27,8 @@ class Table1 implements Migration {
 
     Schema.create(tableName: 'table_1', callback: (Blueprint table) {
       table.integer('id').autoIncrement();
-      table.string('title').unique();
-      table.string('column1').unique().nullable();
+      table.string('name').unique();
+      table.string('email').unique().nullable();
       table.integer('user_id').defaultValue(value: '1');
     });
 
