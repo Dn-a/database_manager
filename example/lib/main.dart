@@ -4,6 +4,8 @@ import 'package:database_manager/database_manager.dart';
 import 'package:example/database/migration/table1.dart';
 import 'package:example/database/migration/table2.dart';
 
+import 'database/connect.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -50,10 +52,14 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text(
+            RaisedButton(
+              child: Text("test sql"),
+              onPressed: _migrate,
+            ),
+            /*Text(
               '${_migrate()}',
               //style: Theme.of(context).textTheme.display1,
-            ),
+            ),*/
             Text(
               'You have pushed the button this many times:',
             ),
@@ -72,14 +78,39 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  String _migrate() {
-    Migrate migrate = Migrate([
-      Table1(),
-      Table2(),
-    ]);
+  Future<void> _migrate() async {
+    Connect db = await Connect().init(dbName: 'prova');
 
-    String sqlString = migrate.create();
-    //print(migrate.create());
-    return sqlString;
+    Migrate migrate = Migrate([Table1(), Table2()]);
+
+    List<String> sqlStringList = migrate.createList();
+
+    //print(sqlStringList);
+
+    try {
+//      db.dropDatabase();
+
+      db.migrate(sqlMigrationsList: sqlStringList);
+
+      /*db.raw(sql: 'PRAGMA table_info([table_1])').then((val){
+        val.forEach((a){
+          print(a);
+        });
+      });*/
+
+      //db.raw(sql: "insert into users (nome,cognome) values ('mario','rossi')");
+
+      db.raw(
+          sql:
+              "insert into table_1 (name,email,user_id) values ('mario','sesmsail@email.com',1)");
+
+      db.raw(sql: 'select * from table_1').then((val) {
+        val.forEach((a) {
+          print(a);
+        });
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 }

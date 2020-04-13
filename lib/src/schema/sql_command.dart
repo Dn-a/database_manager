@@ -48,26 +48,19 @@ class SQLCommand {
   }
 
   String _uniqueGenerator() {
-    var indexName =
-        _parameters['indexName'] != null ? _parameters['indexName'] : '';
-
     StringBuffer str = StringBuffer();
 
-    str.write('UNIQUE KEY');
-    if (indexName.isNotEmpty) str.write('`$indexName`');
+    str.write('UNIQUE ');
     str.write(_argsGeneratorFromList(_parameters['columns']));
 
     return str.toString();
   }
 
   String _indexGenerator() {
-    var indexName =
-        _parameters['indexName'] != null ? _parameters['indexName'] : '';
-
     StringBuffer str = StringBuffer();
 
-    str.write('KEY');
-    if (indexName.isNotEmpty) str.write('`$indexName`');
+    /// da rivedere
+    str.write('INDEX ');
     str.write(_argsGeneratorFromList(_parameters['columns']));
 
     return str.toString();

@@ -91,7 +91,7 @@ class ColumnDefinition {
         ? true
         : throw msg);
     _autoincrement = 'AUTOINCREMENT';
-    primary();
+    //primary();
     return this;
   }
 
@@ -120,7 +120,7 @@ class ColumnDefinition {
 
   /// key
   ColumnDefinition unique() {
-    String sql = 'UNIQUE KEY `${_name}_unique` (`$_name`)';
+    String sql = 'UNIQUE (`$_name`)';
     _indexCommand.add(sql);
     assert(_indexCommand.length > 1 ? throw _indexCommandAssertMsg : true);
     return this;
@@ -141,7 +141,8 @@ class ColumnDefinition {
       case 'autoincrement':
         if (_autoincrement.isNotEmpty ||
             (_parameters['autoincrement'] != null &&
-                _parameters['autoincrement'])) str = 'AUTOINCREMENT';
+                _parameters['autoincrement']))
+          str = 'PRIMARY KEY AUTOINCREMENT';
         break;
       case 'unsigned':
         if (_unsigned.isNotEmpty ||

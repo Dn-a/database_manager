@@ -68,16 +68,29 @@ class Schema {
 
     final StringBuffer sql = StringBuffer();
 
-    sql.writeln('CREATE IF NOT EXISTS `$tableName` (');
-    table.getColumns().forEach((column) => sql.writeln(column.getSQLColumn()));
-    table.getColumns().forEach((column) {
-      if (column.getSQLCommand().isNotEmpty)
-        sql.writeln(column.getSQLCommand());
+    sql.writeln('CREATE TABLE IF NOT EXISTS `$tableName` (');
+
+    int cnt = 1;
+    final List columns = table.getColumns();
+
+    columns.forEach((column) {
+      sql.write(column.getSQLColumn());
+      if (cnt++ < columns.length) sql.writeln(',');
     });
+
+    columns.forEach((column) {
+      if (column.getSQLCommand().isNotEmpty) {
+        sql.writeln(',');
+        sql.write(column.getSQLCommand());
+      }
+    });
+
     table.getCommands().forEach((command) {
-      sql.writeln(command.getSQL());
+      sql.writeln(',');
+      sql.write(command.getSQL());
     });
-    sql.writeln(')');
+    sql.writeln('');
+    sql.writeln(');');
 
     return sql.toString();
   }

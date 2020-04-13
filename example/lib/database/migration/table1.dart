@@ -7,16 +7,17 @@ class Table1 implements Migration {
         tableName: 'table_1',
         callback: (Blueprint table) {
           table.integer('id').autoIncrement();
-          table.string('title').unique();
-          table.string('column1').unique().nullable();
-          table.integer('user_id').defaultValue(value: '1');
+          table.string('name');
+          table.string('email').unique();
+          table.string('cell').nullable();
+          table.integer('user_id').defaultValue(value: 1);
         });
 
     Schema.table(
         tableName: 'table_1',
         callback: (Blueprint table) {
           table.foreign(columns: ['user_id']).references(idList: ['id']).on(
-              tableName: 'user');
+              tableName: 'users');
         });
   }
 
