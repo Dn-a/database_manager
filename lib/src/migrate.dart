@@ -9,12 +9,6 @@ class Migrate {
     _migration.addAll(migration);
   }
 
-  /// SQL String from all tables
-  String create() {
-    _migration.forEach((m) => m.up());
-    return Schema.getSQLAllTable();
-  }
-
   /// List of SQL String from all tables
   List<String> createList() {
     _migration.forEach((m) => m.up());

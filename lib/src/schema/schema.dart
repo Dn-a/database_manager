@@ -13,11 +13,6 @@ class Schema {
     return _generateSql(tableName: tableName);
   }
 
-  /// Returns SQL from all table
-  static String getSQLAllTable() {
-    return _generateSqlFromAllTable();
-  }
-
   static List<String> getSQLList() {
     return _generateSqlList();
   }
@@ -93,17 +88,6 @@ class Schema {
     sql.writeln(');');
 
     return sql.toString();
-  }
-
-  /// Generate single String from all tables
-  static String _generateSqlFromAllTable() {
-    final StringBuffer sqlString = StringBuffer();
-
-    _tables.forEach((name, table) {
-      sqlString.writeln(_generateSql(tableName: name));
-    });
-    _tables.clear();
-    return sqlString.toString();
   }
 
   /// Generate SQL List from all tables

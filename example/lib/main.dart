@@ -79,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _migrate() async {
+
     Connect db = await Connect().init(dbName: 'prova');
 
     Migrate migrate = Migrate([Table1(), Table2()]);
@@ -87,30 +88,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //print(sqlStringList);
 
-    try {
-//      db.dropDatabase();
+    //db.dropDatabase();
+    db.migrate(sqlMigrationsList: sqlStringList);
 
-      db.migrate(sqlMigrationsList: sqlStringList);
-
-      /*db.raw(sql: 'PRAGMA table_info([table_1])').then((val){
+    /*db.raw(sql: 'PRAGMA table_info([table_1])').then((val){
         val.forEach((a){
           print(a);
         });
       });*/
 
-      //db.raw(sql: "insert into users (nome,cognome) values ('mario','rossi')");
+    //db.raw(sql: "insert into users (nome,cognome) values ('mario','rossi')");
 
-      db.raw(
-          sql:
-              "insert into table_1 (name,email,user_id) values ('mario','sesmsail@email.com',1)");
+    db.raw(
+        sql:
+        "insert into table_1 (name,email,user_id) values ('mario','sesmsail@email.com',1)");
 
-      db.raw(sql: 'select * from table_1').then((val) {
-        val.forEach((a) {
-          print(a);
-        });
+    db.raw(sql: 'select * from table_1').then((val) {
+      val.forEach((a) {
+        print(a);
       });
-    } catch (e) {
-      print(e);
-    }
+    });
   }
 }
