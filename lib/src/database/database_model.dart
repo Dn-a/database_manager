@@ -11,7 +11,6 @@ class DatabaseModel {
   DatabaseModel({String dbName = 'database' }){
     _databaseName = dbName;
     _tableName = '';
-    _db = DatabaseHelper().init( dbName: _databaseName, version: 1);
   }
 
 }
