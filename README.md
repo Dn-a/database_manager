@@ -1,5 +1,5 @@
 # database_manager (Developer Preview)
-[![pub package](https://img.shields.io/badge/pub-0.0.1-orange.svg)](https://pub.dartlang.org/packages/database_manager)
+[![pub package](https://img.shields.io/badge/pub-0.0.2-orange.svg)](https://pub.dartlang.org/packages/database_manager)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/dnag88)
 
 Simple way to manage database.
@@ -8,7 +8,7 @@ Simple way to manage database.
 Add this to your package's pubspec.yaml file:
 ```dart
 dependencies:
-  database_manager: "^0.0.1"
+  database_manager: "^0.0.2"
 ```
 
 ## Available features
@@ -25,13 +25,17 @@ class Table1 implements Migration {
   void up() {
     Schema.create(tableName: 'table_1', callback: (Blueprint table) {
       table.integer('id').autoIncrement();
-      table.string('name').unique();
-      table.string('email').unique().nullable();
-      table.integer('user_id').defaultValue(value: '1');
+      table.string('name');
+      table.string('email').unique();
+      table.string('cell').nullable();
+      table.integer('user_id').defaultValue(value: 1);
     });
 
     Schema.table(tableName: 'table_1', callback: (Blueprint table){
-      table.foreign(columns: ['user_id']).references(idList: ['id']).on(tableName: 'user');
+      table.check(expression: " name<>'mark' ")
+            .andCheck(expression: "email = 'aa@bb.com'");
+      table.foreign(columns: ['user_id']).references(idList: ['id']).on(
+            tableName: 'users').onDelete(action: 'cascade');
     });
   }
 
@@ -56,16 +60,16 @@ class Todo {
 ```
 ## Output 
 ```roomsql
-CREATE IF NOT EXISTS `table_1` (
-`id` INTEGER NOT NULL AUTOINCREMENT
-`name` VARCHAR(255) NOT NULL
-`email` VARCHAR(255) DEFAULT NULL
-`user_id` INTEGER NOT NULL DEFAULT '1'
-PRIMARY KEY (`id`)
-UNIQUE KEY `name_unique` (`name`)
-UNIQUE KEY `email_unique` (`email`)
-FOREIGN KEY(`user_id`) REFERENCES `user`(`id`)
-)
+CREATE TABLE IF NOT EXISTS `table_1` (
+`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+`name` VARCHAR(255) NOT NULL,
+`email` VARCHAR(255) NOT NULL,
+`cell` VARCHAR(255) DEFAULT NULL,
+`user_id` INTEGER UNSIGNED NOT NULL DEFAULT '1',
+UNIQUE (`email`),
+CHECK (name<>'mark' AND email = 'aa@bb.com'),
+FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+);
 ```
 
 ### Migration parameters

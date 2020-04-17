@@ -10,11 +10,14 @@ class SQLCommand {
       : this._name = name,
         this._parameters = parameters;
 
-  String _on = '';
   String _references = '';
 
+  String _on = '';
   String _onDelete = '';
   String _onUpdate = '';
+
+  List<String> _andCheck = [];
+  List<String> _orCheck = [];
 
   String getSQL() {
     switch (_name) {
@@ -32,6 +35,9 @@ class SQLCommand {
         break;
       case 'DROP':
         return _dropGenerator();
+        break;
+      case 'CHECK':
+        return _checkGenerator();
         break;
       default:
         return '';
@@ -64,6 +70,32 @@ class SQLCommand {
     str.write(_argsGeneratorFromList(_parameters['columns']));
 
     return str.toString();
+  }
+
+  String _checkGenerator() {
+    String expression =
+    _parameters['expression'] != null ? _parameters['expression'] : '';
+
+    StringBuffer str = StringBuffer();
+
+    str.write('CHECK ');
+    str.write( '(' );
+    str.write( expression.trim() );
+    _andCheck.forEach( (ck) => str.write(' AND ${ck.trim()}'));
+    _orCheck.forEach( (ck) => str.write(' OR ${ck.trim()}'));
+    str.write( ')' );
+
+    return str.toString();
+  }
+
+  SQLCommand andCheck({@required String expression}) {
+    _andCheck.add(expression);
+    return this;
+  }
+
+  SQLCommand orCheck({@required String expression}) {
+    _orCheck.add(expression);
+    return this;
   }
 
   String _foreignGenerator() {
@@ -152,3 +184,4 @@ class SQLCommand {
     return str.toString();
   }
 }
+

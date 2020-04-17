@@ -80,6 +80,7 @@ class ColumnDefinition {
   }
 
   /// Property
+  /// Note: AUTOINCREMENT is only allowed on an INTEGER PRIMARY KEY, not UNSIGNED, not without PRIMARY KEY
   ColumnDefinition autoIncrement() {
     String msg = 'AutoIncrement only works on numbers';
     assert(_type == 'TINYINT' ||

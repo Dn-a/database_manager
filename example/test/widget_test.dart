@@ -13,7 +13,7 @@ void main() {
       Table1(),
     ]);
 
-    String sqlString = migrate.create();
+    //String sqlString = migrate.;
 
     //print (sqlString);
 

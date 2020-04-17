@@ -10,14 +10,16 @@ class Table1 implements Migration {
           table.string('name');
           table.string('email').unique();
           table.string('cell').nullable();
-          table.integer('user_id').defaultValue(value: 1);
+          table.unsignedInteger('user_id').defaultValue(value: 1);
         });
 
     Schema.table(
         tableName: 'table_1',
         callback: (Blueprint table) {
+          table.check(expression: " name<>'mark' ")
+              .andCheck(expression: "email = 'aa@bb.com'");
           table.foreign(columns: ['user_id']).references(idList: ['id']).on(
-              tableName: 'users');
+              tableName: 'users').onDelete(action: 'cascade');
         });
   }
 

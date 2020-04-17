@@ -194,4 +194,8 @@ class Blueprint {
   SQLCommand drop({@required String tableName}) {
     return _addCommand(name: 'DROP', parameters: {'tableName': tableName});
   }
+
+  SQLCommand check({@required String expression}) {
+    return _addCommand(name: 'CHECK', parameters: {'expression': expression});
+  }
 }

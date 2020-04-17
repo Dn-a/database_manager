@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -45,9 +45,17 @@ class Connect {
   Future<List<Map<String, dynamic>>> raw({@required String sql}) async {
     Database db = await _db;
 
-    db.rawQuery("PRAGMA foreign_keys = ON");
+    if(_fk.isNotEmpty)
+      db.rawQuery(_fk);
 
     return db.rawQuery(sql);
+  }
+
+  String _fk = '';
+
+  void foreignKeys({bool active = true }){
+    if(active)
+      _fk = "PRAGMA foreign_keys = ON";
   }
 
   Future dropDatabase() async {

@@ -11,7 +11,7 @@ void main() {
       //Table2(),
     ]);
 
-    print(migrate.create());
+    print(migrate.createList());
 
     //print(migrate.drop());
   });

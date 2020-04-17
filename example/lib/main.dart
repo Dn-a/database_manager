@@ -80,28 +80,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _migrate() async {
 
-    Connect db = await Connect().init(dbName: 'prova');
+    ConnectHelper db = await ConnectHelper().init(dbName: 'prova');
 
-    Migrate migrate = Migrate([Table1(), Table2()]);
+    Migrate migrate = Migrate([
+      Table1(),
+      //Table2()
+    ]);
 
     List<String> sqlStringList = migrate.createList();
 
-    //print(sqlStringList);
+    print(sqlStringList);
 
     //db.dropDatabase();
     db.migrate(sqlMigrationsList: sqlStringList);
 
-    /*db.raw(sql: 'PRAGMA table_info([table_1])').then((val){
+    db.raw(sql: 'PRAGMA table_info([table_1])').then((val){
         val.forEach((a){
           print(a);
         });
-      });*/
-
+      });
+    return;
     //db.raw(sql: "insert into users (nome,cognome) values ('mario','rossi')");
 
-    db.raw(
+    /*db.raw(
         sql:
-        "insert into table_1 (name,email,user_id) values ('mario','sesmsail@email.com',1)");
+        "insert into table_1 (name,email,user_id) values ('mario','sesmsail@email.com',1)");*/
 
     db.raw(sql: 'select * from table_1').then((val) {
       val.forEach((a) {
