@@ -2,7 +2,7 @@
 [![pub package](https://img.shields.io/badge/pub-0.0.2-orange.svg)](https://pub.dartlang.org/packages/database_manager)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/dnag88)
 
-Simple way to manage database.
+Simple way to manage database. Version control and application's database schema. Simplify CRUD operations.
 
 ## Installing
 Add this to your package's pubspec.yaml file:
