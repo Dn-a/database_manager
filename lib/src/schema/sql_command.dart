@@ -74,16 +74,16 @@ class SQLCommand {
 
   String _checkGenerator() {
     String expression =
-    _parameters['expression'] != null ? _parameters['expression'] : '';
+        _parameters['expression'] != null ? _parameters['expression'] : '';
 
     StringBuffer str = StringBuffer();
 
     str.write('CHECK ');
-    str.write( '(' );
-    str.write( expression.trim() );
-    _andCheck.forEach( (ck) => str.write(' AND ${ck.trim()}'));
-    _orCheck.forEach( (ck) => str.write(' OR ${ck.trim()}'));
-    str.write( ')' );
+    str.write('(');
+    str.write(expression.trim());
+    _andCheck.forEach((ck) => str.write(' AND ${ck.trim()}'));
+    _orCheck.forEach((ck) => str.write(' OR ${ck.trim()}'));
+    str.write(')');
 
     return str.toString();
   }
@@ -184,4 +184,3 @@ class SQLCommand {
     return str.toString();
   }
 }
-

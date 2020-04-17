@@ -19,11 +19,12 @@ class DatabaseHelper {
 
   Future<Database> get _db async {
     assert(
-    _database != null ? true : throw 'database has not been initialized');
+        _database != null ? true : throw 'database has not been initialized');
     return _database;
   }
 
-  Future<DatabaseHelper> init({String dbName = 'database', int version = 1}) async {
+  Future<DatabaseHelper> init(
+      {String dbName = 'database', int version = 1}) async {
     _dbName = dbName;
     final String path = await _path();
 
@@ -45,17 +46,15 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> raw({@required String sql}) async {
     Database db = await _db;
 
-    if(_fk.isNotEmpty)
-      db.rawQuery(_fk);
+    if (_fk.isNotEmpty) db.rawQuery(_fk);
 
     return db.rawQuery(sql);
   }
 
   String _fk = 'PRAGMA foreign_keys = ON';
 
-  void foreignKeys({bool active = true }){
-    if(!active)
-      _fk = '';
+  void foreignKeys({bool active = true}) {
+    if (!active) _fk = '';
   }
 
   Future dropDatabase() async {

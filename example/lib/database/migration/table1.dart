@@ -16,10 +16,14 @@ class Table1 implements Migration {
     Schema.table(
         tableName: 'table_1',
         callback: (Blueprint table) {
-          table.check(expression: " name<>'mark' ")
+          table
+              .check(expression: " name<>'mark' ")
               .andCheck(expression: "email = 'aa@bb.com'");
-          table.foreign(columns: ['user_id']).references(idList: ['id']).on(
-              tableName: 'users').onDelete(action: 'cascade');
+          table
+              .foreign(columns: ['user_id'])
+              .references(idList: ['id'])
+              .on(tableName: 'users')
+              .onDelete(action: 'cascade');
         });
   }
 
