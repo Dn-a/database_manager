@@ -53,7 +53,7 @@ class Todo {
       Table1(),
     ]);
 
-    String sqlString = migrate.create();
+    String sqlString = migrate.createList();
 
   }
 }
