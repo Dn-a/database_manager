@@ -4,7 +4,6 @@ import 'package:database_manager/database_manager.dart';
 import 'package:example/database/migration/table1.dart';
 import 'package:example/database/migration/table2.dart';
 
-import 'database/connect.dart';
 
 void main() => runApp(MyApp());
 
@@ -80,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _migrate() async {
 
-    ConnectHelper db = await ConnectHelper().init(dbName: 'prova');
+    DatabaseHelper db = await DatabaseHelper().init(dbName: 'prova');
 
     Migrate migrate = Migrate([
       Table1(),

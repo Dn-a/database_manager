@@ -5,25 +5,25 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class Connect {
-  static final Connect _this = Connect._();
+class DatabaseHelper {
+  static final DatabaseHelper _this = DatabaseHelper._();
 
   String _dbName = 'database';
   Database _database;
 
-  Connect._();
+  DatabaseHelper._();
 
-  factory Connect() {
+  factory DatabaseHelper() {
     return _this;
   }
 
   Future<Database> get _db async {
     assert(
-        _database != null ? true : throw 'database has not been initialized');
+    _database != null ? true : throw 'database has not been initialized');
     return _database;
   }
 
-  Future<Connect> init({String dbName = 'database', int version = 1}) async {
+  Future<DatabaseHelper> init({String dbName = 'database', int version = 1}) async {
     _dbName = dbName;
     final String path = await _path();
 
@@ -51,11 +51,11 @@ class Connect {
     return db.rawQuery(sql);
   }
 
-  String _fk = '';
+  String _fk = 'PRAGMA foreign_keys = ON';
 
   void foreignKeys({bool active = true }){
-    if(active)
-      _fk = "PRAGMA foreign_keys = ON";
+    if(!active)
+      _fk = '';
   }
 
   Future dropDatabase() async {
