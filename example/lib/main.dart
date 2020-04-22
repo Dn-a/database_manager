@@ -4,6 +4,8 @@ import 'package:database_manager/database_manager.dart';
 import 'package:example/database/migration/table1.dart';
 import 'package:example/database/migration/table2.dart';
 
+import 'model/table_1.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -77,6 +79,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _migrate() async {
+
+    TableModel tb = TableModel();
+
+    return;
+
     DatabaseHelper db = await DatabaseHelper().init(dbName: 'prova');
 
     Migrate migrate = Migrate([
@@ -91,11 +98,11 @@ class _MyHomePageState extends State<MyHomePage> {
     //db.dropDatabase();
     db.migrate(sqlMigrationsList: sqlStringList);
 
-    db.raw(sql: 'PRAGMA table_info([table_1])').then((val) {
+    /*db.raw(sql: 'PRAGMA table_info([table_1])').then((val) {
       val.forEach((a) {
         print(a);
       });
-    });
+    });*/
     return;
     //db.raw(sql: "insert into users (nome,cognome) values ('mario','rossi')");
 
@@ -110,3 +117,4 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 }
+

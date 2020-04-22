@@ -62,7 +62,7 @@ class ColumnDefinition {
   }
 
   /// Property - default value
-  ColumnDefinition defaultValue({@required dynamic value}) {
+  ColumnDefinition defaultValue(dynamic value) {
     _defaultValue.add("'$value'");
     assert(_defaultValue.length > 1 || _autoincrement != ''
         ? throw _defaultValueAssertMsg

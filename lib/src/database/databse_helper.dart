@@ -17,7 +17,7 @@ class DatabaseHelper {
     return _this;
   }
 
-  Future<Database> get _db async {
+  Database get database {
     assert(
         _database != null ? true : throw 'database has not been initialized');
     return _database;
@@ -33,7 +33,7 @@ class DatabaseHelper {
   }
 
   Future migrate({@required List<String> sqlMigrationsList}) async {
-    final db = await _db;
+    final db = database;
 
     try {
       db.transaction((tran) async =>
@@ -44,7 +44,7 @@ class DatabaseHelper {
   }
 
   Future<List<Map<String, dynamic>>> raw({@required String sql}) async {
-    Database db = await _db;
+    Database db =  database;
 
     if (_fk.isNotEmpty) db.rawQuery(_fk);
 

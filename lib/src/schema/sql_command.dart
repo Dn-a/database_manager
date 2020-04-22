@@ -88,7 +88,7 @@ class SQLCommand {
     return str.toString();
   }
 
-  SQLCommand andCheck({@required String expression}) {
+  SQLCommand andCheck(String expression) {
     _andCheck.add(expression);
     return this;
   }

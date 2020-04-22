@@ -26,7 +26,7 @@ class Table1 implements Migration {
           table.integer('id').autoIncrement();
           table.string('name').unique();
           table.string('email').unique().nullable();
-          table.integer('user_id').defaultValue(value: '1');
+          table.integer('user_id').defaultValue('1');
         });
 
     Schema.table(
@@ -52,7 +52,7 @@ class Table2 implements Migration {
           table.integer('id').autoIncrement();
           table.string('title').unique();
           table.string('column1').unique().nullable();
-          table.integer('user_id').defaultValue(value: '1');
+          table.integer('user_id').defaultValue('1');
         });
 
     Schema.table(
