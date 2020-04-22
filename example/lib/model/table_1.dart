@@ -1,8 +1,6 @@
 import 'database_model.dart';
 
-class TableModel extends Model{
-
+class TableModel extends Model {
   @override
   String tableName = 'sucaTable';
-
 }

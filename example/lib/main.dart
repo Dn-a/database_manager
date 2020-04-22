@@ -79,7 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _migrate() async {
-
     TableModel tb = TableModel();
 
     return;
@@ -117,4 +116,3 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 }
-

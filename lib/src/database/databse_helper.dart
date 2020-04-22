@@ -44,7 +44,7 @@ class DatabaseHelper {
   }
 
   Future<List<Map<String, dynamic>>> raw({@required String sql}) async {
-    Database db =  database;
+    Database db = database;
 
     if (_fk.isNotEmpty) db.rawQuery(_fk);
 

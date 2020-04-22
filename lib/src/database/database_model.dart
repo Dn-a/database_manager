@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class DatabaseModel {
-
   String tableName;
   String databaseName = 'database';
 
@@ -14,15 +13,14 @@ abstract class DatabaseModel {
     this._init();
   }
 
-  void _init(){
-
+  void _init() {
     DatabaseHelper().init(dbName: databaseName).then((dbHelper) {
       _dbHelper = dbHelper;
       _db = dbHelper.database;
 
       final dynamic migration = this.migrate();
 
-      if(migration!= null && migration.isNotEmpty){
+      if (migration != null && migration.isNotEmpty) {
         Migrate migrate = Migrate(migration);
         List<String> sqlStringList = migrate.createList();
 
@@ -39,11 +37,9 @@ abstract class DatabaseModel {
           });
         });
       }
-
     });
   }
 
   // ignore: missing_return
-  List<Migration> migrate(){}
-
+  List<Migration> migrate() {}
 }

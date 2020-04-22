@@ -16,9 +16,7 @@ class Table1 implements Migration {
     Schema.table(
         tableName: 'table_1',
         callback: (Blueprint table) {
-          table
-              .check(" name<>'mark' ")
-              .andCheck("email = 'aaa1a@bb.com'");
+          table.check(" name<>'mark' ").andCheck("email = 'aaa1a@bb.com'");
           table
               .foreign(columns: ['user_id'])
               .references(idList: ['id'])
