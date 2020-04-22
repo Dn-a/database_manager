@@ -1,6 +1,6 @@
 name: database_manager
 description: Simple way to manage database. Version control and application's database schema. Simplify CRUD operations.
-version: 0.0.2+1
+version: 0.0.2+2
 author: Antonino Di Natale <gyorgio88@gmail.com>
 homepage: https://github.com/Dn-a/database_manager
 
