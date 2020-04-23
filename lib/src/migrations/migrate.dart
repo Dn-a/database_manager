@@ -1,5 +1,5 @@
-import 'package:database_manager/src/migration_interface.dart';
-import 'package:database_manager/src/schema/schema.dart';
+import 'migration_interface.dart';
+import '../schema/schema.dart';
 
 class Migrate {
   final List<Migration> _migration = [];

@@ -4,7 +4,7 @@ import 'package:database_manager/database_manager.dart';
 import 'package:example/database/migration/table1.dart';
 import 'package:example/database/migration/table2.dart';
 
-import 'model/table_1.dart';
+import 'model/table1_model.dart';
 
 void main() => runApp(MyApp());
 
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _migrate() async {
-    TableModel tb = TableModel();
+    Table1Model tb = Table1Model();
 
     return;
 

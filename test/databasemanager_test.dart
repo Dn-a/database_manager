@@ -1,5 +1,5 @@
-import 'package:database_manager/src/migrate.dart';
-import 'package:database_manager/src/migration_interface.dart';
+import 'package:database_manager/src/migrations/migrate.dart';
+import 'package:database_manager/src/migrations/migration_interface.dart';
 import 'package:database_manager/src/schema/blueprint.dart';
 import 'package:database_manager/src/schema/schema.dart';
 import 'package:flutter_test/flutter_test.dart';
