@@ -2,9 +2,10 @@ import 'package:sqflite/sqflite.dart';
 import 'databse_helper.dart';
 import '../migrations/migrate.dart';
 import '../migrations/migration_interface.dart';
+import '../orm/orm_builder.dart';
 
 @proxy
-abstract class DatabaseModel {
+abstract class DatabaseModel extends ORMBuilder {
   final String tableName = '';
   final String databaseName = 'database';
 

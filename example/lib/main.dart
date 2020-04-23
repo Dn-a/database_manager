@@ -81,6 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _migrate() async {
     Table1Model tb = Table1Model();
 
+    tb.where(column: 'i', value: 1);
+
     return;
 
     DatabaseHelper db = await DatabaseHelper().init(dbName: 'prova');
