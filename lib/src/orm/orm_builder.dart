@@ -6,10 +6,12 @@ class ORMBuilder {
 
   ORMBuilder({@required QueryBuilder query}) : this._query = query;
 
-  ORMBuilder where(
-      {@required dynamic column,
-      String operator = '=',
-      @required dynamic value}) {
+  ORMBuilder where({
+    @required dynamic column,
+    String operator = '=',
+    dynamic value,
+  }) {
+    _query.where(column: column, operator: operator, value: value);
     return this;
   }
 }

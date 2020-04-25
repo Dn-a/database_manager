@@ -1,19 +1,20 @@
 import 'dart:async';
 import 'dart:io';
+import 'connection_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DatabaseHelper {
-  static final DatabaseHelper _this = DatabaseHelper._();
+class Connection {
+  static final Connection _this = Connection._();
 
   String _dbName = 'database';
   Database _database;
 
-  DatabaseHelper._();
+  Connection._();
 
-  factory DatabaseHelper() {
+  factory Connection() {
     return _this;
   }
 
@@ -23,8 +24,7 @@ class DatabaseHelper {
     return _database;
   }
 
-  Future<DatabaseHelper> init(
-      {String dbName = 'database', int version = 1}) async {
+  Future<Connection> init({String dbName = 'database', int version = 1}) async {
     _dbName = dbName;
     final String path = await _path();
 

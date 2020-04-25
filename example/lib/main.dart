@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return;
 
-    DatabaseHelper db = await DatabaseHelper().init(dbName: 'prova');
+    Connection db = await Connection().init(dbName: 'prova');
 
     Migrate migrate = Migrate([
       Table1(),

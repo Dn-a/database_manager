@@ -1,27 +1,25 @@
 import 'package:sqflite/sqflite.dart';
-import 'databse_helper.dart';
+import '../database/connection.dart';
 import '../migrations/migrate.dart';
 import '../migrations/migration_interface.dart';
-import '../orm/orm_builder.dart';
 
-@proxy
-abstract class DatabaseModel extends ORMBuilder {
+abstract class ORMModel {
   final String tableName = '';
   final String databaseName = 'database';
 
   Database _db;
-  DatabaseHelper _dbHelper;
+  Connection _dbHelper;
 
-  DatabaseModel() {
-    this._init();
+  ORMModel() {
+    this._setConnection();
   }
 
-  void _init() {
-    DatabaseHelper().init(dbName: databaseName).then((dbHelper) {
+  void _setConnection() {
+    Connection().init(dbName: databaseName).then((dbHelper) {
       _dbHelper = dbHelper;
       _db = dbHelper.database;
 
-      final dynamic migration = this.migrate();
+      final dynamic migration = this.migration();
 
       if (migration != null && migration.isNotEmpty) {
         Migrate migrate = Migrate(migration);
@@ -65,5 +63,5 @@ abstract class DatabaseModel extends ORMBuilder {
   }
 
   // ignore: missing_return
-  List<Migration> migrate() {}
+  List<Migration> migration() {}
 }

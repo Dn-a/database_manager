@@ -12,7 +12,7 @@ void main() {
 
     //print (sqlString);
 
-    DatabaseHelper db = await DatabaseHelper().init(dbName: 'prova');
+    Connection db = await Connection().init(dbName: 'prova');
 
     db.raw(sql: 'DESC prova_1').then((val) {
       val.forEach((a) {
