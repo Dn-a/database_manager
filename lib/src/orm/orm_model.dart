@@ -1,20 +1,24 @@
+
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database/connection.dart';
 import '../migrations/migrate.dart';
 import '../migrations/migration_interface.dart';
+import 'orm_builder.dart';
+import '../orm/query/query_builder.dart';
 
-abstract class ORMModel {
+
+abstract class ORMModel extends ORMBuilder {
   final String tableName = '';
   final String databaseName = 'database';
 
   Database _db;
   Connection _dbHelper;
 
-  ORMModel() {
-    this._setConnection();
-  }
+  ORMModel(): super(query : QueryBuilder());
 
-  void _setConnection() {
+  void setConnection() {
+
     Connection().init(dbName: databaseName).then((dbHelper) {
       _dbHelper = dbHelper;
       _db = dbHelper.database;

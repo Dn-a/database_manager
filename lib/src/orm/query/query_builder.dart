@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../../database/connection.dart';
 
 class QueryBuilder {
+
   Connection connection;
 
   Map<String, List> bindings = {
@@ -67,10 +68,16 @@ class QueryBuilder {
     return this;
   }
 
+  QueryBuilder selectRaw({String expression}) {
+    return this;
+  }
+
   QueryBuilder where(
       {@required dynamic column,
       String operator = '=',
-      @required dynamic value}) {
+      @required dynamic value}
+  ) {
+
     return this;
   }
 }
