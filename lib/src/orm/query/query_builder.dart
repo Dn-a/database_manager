@@ -50,9 +50,9 @@ class QueryBuilder {
 
   List columns;
   bool distinct;
-  String from;
+  String table;
   List joins;
-  List wheres;
+  List<Map<String,dynamic>> wheres = [];
   List groups;
   List havings;
   int limit;
@@ -68,6 +68,11 @@ class QueryBuilder {
     return this;
   }
 
+  QueryBuilder from({String table}) {
+    table = table;
+    return this;
+  }
+
   QueryBuilder selectRaw({String expression}) {
     return this;
   }
@@ -75,9 +80,17 @@ class QueryBuilder {
   QueryBuilder where(
       {@required dynamic column,
       String operator = '=',
-      @required dynamic value}
+      @required dynamic value,
+        String condition = 'AND'
+      }
   ) {
-
+    Map<String,dynamic> whereMap = {
+      'column': column,
+      'operator': operator,
+      'value': value,
+      condition: condition
+    };
+    wheres.add(whereMap);
     return this;
   }
 }

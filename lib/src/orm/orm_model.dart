@@ -5,40 +5,47 @@ import '../database/connection.dart';
 import '../migrations/migrate.dart';
 import '../migrations/migration_interface.dart';
 import 'orm_builder.dart';
-import '../orm/query/query_builder.dart';
 
 
 abstract class ORMModel extends ORMBuilder {
-  final String tableName = '';
+
   final String databaseName = 'database';
+  final int databaseVersion = 1;
 
   Database _db;
-  Connection _dbHelper;
 
-  ORMModel(): super(query : QueryBuilder());
+  Future<Connection> connection;
 
-  void setConnection() {
+  ORMModel() {
+    setConnection();
+  }
 
-    Connection().init(dbName: databaseName).then((dbHelper) {
-      _dbHelper = dbHelper;
+  Future<void> setConnection() async {
+
+    //_dbHelper = Connection();
+
+    connection = await Connection().init(dbName: databaseName, version: databaseVersion,
+      onCreate: (Database db, int version)  {
+        if(this.migration().isEmpty) return;
+        print("Database '$databaseName' created | version: $databaseVersion");
+        Migrate migrate = Migrate(this.migration());
+        List<String> sqlStringList = migrate.createList();
+        try {
+          db.transaction((tran) async =>
+              sqlStringList.forEach((sql) async => await tran.execute(sql)));
+        } catch (e) {
+          print(e);
+        }
+      }
+    ).then((dbHelper) {
       _db = dbHelper.database;
 
-      final dynamic migration = this.migration();
+      return;
 
-      if (migration != null && migration.isNotEmpty) {
-        Migrate migrate = Migrate(migration);
-        List<String> sqlStringList = migrate.createList();
+      print('\nDatabase Name: $databaseName');
+      print('Table Name: $tableName \n\n');
 
-        _dbHelper.migrate(sqlMigrationsList: sqlStringList);
-
-        // TEST
-        /*print('\nDatabase Name: $databaseName');
-          print('Table Name: $tableName \n\n');
-          print(sqlStringList);*/
-
-//          _dbHelper.dropDatabase();
-
-        /*_dbHelper.raw(sql: 'PRAGMA table_info([table_1])').then((val) {
+      /*_dbHelper.raw(sql: 'PRAGMA table_info([users])').then((val) {
             List<dynamic> obj = [];
             val.forEach((a) {
               dynamic b = a['name'];
@@ -50,22 +57,18 @@ abstract class ORMModel extends ORMBuilder {
 
 //          _dbHelper.raw(sql: "insert into users (nome,cognome) values ('serena','rossi')");
 
-        _dbHelper.raw(
-            sql:
-                "insert into table_1 (name,email,user_id) values ('mar','7email@email.com',1)");
+     /* _dbHelper.raw(
+          sql:
+          "insert into table_1 (name,email,user_id) values ('mar','7email@email.com',1)");
 
-        _dbHelper.raw(sql: 'select * from table_1').then((val) {
-          val.forEach((a) {
-            print(a);
-          });
+      _dbHelper.raw(sql: 'select * from table_1').then((val) {
+        val.forEach((a) {
+          print(a);
         });
-
-        //END TEST
-
-      }
+      });*/
     });
   }
 
   // ignore: missing_return
-  List<Migration> migration() {}
+  List<Migration> migration() { return []; }
 }

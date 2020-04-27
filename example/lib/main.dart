@@ -53,8 +53,16 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             RaisedButton(
-              child: Text("test sql"),
+              child: Text("migrate"),
               onPressed: _migrate,
+            ),
+            RaisedButton(
+              child: Text("drop database"),
+              onPressed: () {
+                Connection con = Connection();
+                con.init(dbName: 'prova');
+                con.dropDatabase();
+              },
             ),
             /*Text(
               '${_migrate()}',

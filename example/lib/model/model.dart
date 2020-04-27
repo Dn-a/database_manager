@@ -5,6 +5,8 @@ import 'package:example/database/migration/table2.dart';
 class Model extends ORMModel {
   @override
   final String databaseName = 'prova';
+  @override
+  final int databaseVersion = 1;
 
   @override
   List<Migration> migration() {
