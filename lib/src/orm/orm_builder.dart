@@ -7,21 +7,42 @@ import 'package:sqflite/sqflite.dart';
 class ORMBuilder {
 
   final String tableName = '';
-
-  final Future<Connection> connection;
-
+  Connection _connection;
   QueryBuilder _query;
 
-  ORMBuilder({this.connection}){
+  ORMBuilder() {
     _query = QueryBuilder();
   }
 
-  Future<List<Map<String, dynamic>>> get({@required List<String> column }) async {
-    Connection conn = await connection;
-    Database db = conn.database;
+  Future<Connection> setConnection({Connection connection}) async {
+    return connection;
+  }
+
+  Future<Connection> getConnection() async {
+    _connection = await this.setConnection();
+    assert( _connection!=null ? true : throw "ORMBuilder: Connection is not initialized" );
+
+    return _connection;
+  }
+
+  Future<dynamic> insert({ List<Map<String,dynamic>> values }) async {
+    Connection connection = await this.getConnection();
+    Database db = connection.database;
+
+    return db.transaction((db) async{
+      return values.forEach((value) async {
+        return await db.insert(tableName, value);
+      });
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> get({ List<String> column }) async {
+    Connection connection = await this.getConnection();
+    Database db = connection.database;
 
     return db.query(tableName);
   }
+
 
   ORMBuilder where({
     @required dynamic column,

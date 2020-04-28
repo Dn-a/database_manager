@@ -9,7 +9,8 @@ class Model extends ORMModel {
   final int databaseVersion = 1;
 
   @override
-  List<Migration> migration() {
+  List<Migration> migrationOnCreate() {
     return [Table1(), Table2()];
   }
+
 }

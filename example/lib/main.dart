@@ -89,7 +89,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _migrate() async {
     Table1Model tb = Table1Model();
 
-    tb.where(column: 'i', value: 1);
+    //List result = await tb.where(column: 'i', value: 1).get();
+
+    //result.forEach((r) => print(r));
+
+    tb.where(column: 'i', value: 1).get().then((val) {
+      val.forEach((a) => print(a));
+    });
 
     return;
 

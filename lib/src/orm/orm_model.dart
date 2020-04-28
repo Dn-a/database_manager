@@ -12,40 +12,43 @@ abstract class ORMModel extends ORMBuilder {
   final String databaseName = 'database';
   final int databaseVersion = 1;
 
-  Database _db;
-
-  Future<Connection> connection;
 
   ORMModel() {
-    setConnection();
+    //setConnection();
   }
 
-  Future<void> setConnection() async {
+  @override
+  Future<Connection> setConnection({Connection connection}) async {
 
-    //_dbHelper = Connection();
+    Connection conn = Connection();
 
-    connection = await Connection().init(dbName: databaseName, version: databaseVersion,
-      onCreate: (Database db, int version)  {
-        if(this.migration().isEmpty) return;
-        print("Database '$databaseName' created | version: $databaseVersion");
-        Migrate migrate = Migrate(this.migration());
-        List<String> sqlStringList = migrate.createList();
-        try {
-          db.transaction((tran) async =>
-              sqlStringList.forEach((sql) async => await tran.execute(sql)));
-        } catch (e) {
-          print(e);
+    if(connection != null)
+      conn = connection;
+
+    await conn.init(dbName: databaseName, version: databaseVersion,
+        onCreate: (Database db, int version)  {
+
+          if(this.migrationOnCreate().isEmpty) return;
+
+          print("Database '$databaseName' created | version: $databaseVersion");
+
+          this._migrate(db: db, migration: this.migrationOnCreate() );
+
         }
-      }
-    ).then((dbHelper) {
-      _db = dbHelper.database;
+    );
 
-      return;
+    Database db = conn.database;
 
-      print('\nDatabase Name: $databaseName');
-      print('Table Name: $tableName \n\n');
+    if(this.migration().isNotEmpty)
+      this._migrate(db: db, migration: this.migration() );
 
-      /*_dbHelper.raw(sql: 'PRAGMA table_info([users])').then((val) {
+    //conn.raw(sql: "insert into users (nome,cognome) values ('serena','rossisa')");
+    //conn.raw( sql: "insert into table_1 (name,email,user_id) values ('mar','1email@email.com',2)");
+
+    //print('\nDatabase Name: $databaseName');
+    //print('Table Name: $tableName \n\n');
+
+    /*_dbHelper.raw(sql: 'PRAGMA table_info([users])').then((val) {
             List<dynamic> obj = [];
             val.forEach((a) {
               dynamic b = a['name'];
@@ -55,20 +58,26 @@ abstract class ORMModel extends ORMBuilder {
             //print(obj);
           });*/
 
-//          _dbHelper.raw(sql: "insert into users (nome,cognome) values ('serena','rossi')");
-
-     /* _dbHelper.raw(
-          sql:
-          "insert into table_1 (name,email,user_id) values ('mar','7email@email.com',1)");
-
-      _dbHelper.raw(sql: 'select * from table_1').then((val) {
-        val.forEach((a) {
-          print(a);
-        });
-      });*/
-    });
+    return conn;
   }
 
-  // ignore: missing_return
+  /// migration is performed only during the database creation phase
+  List<Migration> migrationOnCreate() { return []; }
+
+  /// migration is performed each time the model is invoked
   List<Migration> migration() { return []; }
+
+  void _migrate({ Database db, List<Migration> migration }){
+
+    Migrate migrate = Migrate(migration);
+    List<String> sqlStringList = migrate.createList();
+
+    try {
+      db.transaction((tran) async =>
+          sqlStringList.forEach((sql) async => await tran.execute(sql)));
+    } catch (e) {
+      print(e);
+    }
+  }
+
 }
