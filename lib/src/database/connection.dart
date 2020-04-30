@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:io';
 import 'package:database_manager/src/orm/query/query_builder.dart';
@@ -7,7 +6,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-typedef OnCreateCallback = void Function(Database db,int version);
+typedef OnCreateCallback = void Function(Database db, int version);
 
 class Connection {
   static final Connection _this = Connection._();
@@ -29,11 +28,14 @@ class Connection {
     return _database;
   }
 
-  Future<Connection> init({String dbName = 'database', int version = 1, OnCreateCallback onCreate}) async {
+  Future<Connection> init(
+      {String dbName = 'database',
+      int version = 1,
+      OnCreateCallback onCreate}) async {
     _dbName = dbName;
     final String path = await _path();
 
-    _database = await openDatabase(path, version: version, onCreate: onCreate );
+    _database = await openDatabase(path, version: version, onCreate: onCreate);
     return this;
   }
 
@@ -55,7 +57,6 @@ class Connection {
 
     return db.rawQuery(sql);
   }
-
 
   void foreignKeys({bool active = true}) {
     if (!active) _foreignKey = '';

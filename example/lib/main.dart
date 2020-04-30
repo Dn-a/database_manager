@@ -88,57 +88,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _migrate() async {
-    Table1Model tb = Table1Model();
+    Table1Model table = Table1Model();
 
-    //List result = await tb.where(column: 'i', value: 1).get();
-
-    //result.forEach((r) => print(r));
-
-    tb
-    //.where(column: 'id', value: 2)
-    //.where(column: 'name', operator: 'like', value: '%ar')
-    //.orWhere(column: 'name', operator: 'like', value: 'm%')
-    .whereNotIn(column: 'id', values: ['2','3','4'])
-    .orWhere(column: 'id', value: 1)
-    //.orWhere(column: 'email', operator: 'like', value: '8email%')
-    .get( ['*'] ).then((val) {
-
-      val.forEach((a) => print(a));
-
-    }).catchError((e) => print(e));
-
-    return;
-
-    Connection db = await Connection().init(dbName: 'prova');
-
-    Migrate migrate = Migrate([
-      Table1(),
-      //Table2()
+    /*List<int> ids = await table.insert([
+      { 'name' : 'franco', 'email' : 'francos2@email.com' },
+      { 'name' : 'carlos', 'email' : 'carloa2@email.com' },
+      { 'name' : 'maria', 'email' : 'mariaDB2@email.com' }
     ]);
+    print(ids);*/
 
-    List<String> sqlStringList = migrate.createList();
+    table
+        //.where(column: 'id', value: 2)
+        //.where(column: 'name', operator: 'like', value: '%ar')
+        //.orWhere(column: 'name', operator: 'like', value: 'm%')
+        .whereNotIn(column: 'id', values: ['2', '3', '4'])
+        .orWhere(column: 'id', value: 1)
+        //.orWhere(column: 'email', operator: 'like', value: '8email%')
+        .get(['*'])
+        .then((val) {
+          val.forEach((a) => print(a));
+        })
+        .catchError((e) => print(e));
 
-    print(sqlStringList);
-
-    //db.dropDatabase();
-    db.migrate(sqlMigrationsList: sqlStringList);
-
-    /*db.raw(sql: 'PRAGMA table_info([table_1])').then((val) {
-      val.forEach((a) {
-        print(a);
-      });
-    });*/
     return;
-    //db.raw(sql: "insert into users (nome,cognome) values ('mario','rossi')");
-
-    /*db.raw(
-        sql:
-        "insert into table_1 (name,email,user_id) values ('mario','sesmsail@email.com',1)");*/
-
-    db.raw(sql: 'select * from table_1').then((val) {
-      val.forEach((a) {
-        print(a);
-      });
-    });
   }
 }

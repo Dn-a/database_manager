@@ -12,5 +12,4 @@ class Model extends ORMModel {
   List<Migration> migrationOnCreate() {
     return [Table1(), Table2()];
   }
-
 }
