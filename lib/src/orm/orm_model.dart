@@ -18,14 +18,11 @@ abstract class ORMModel extends ORMBuilder {
   }
 
   @override
-  Future<Connection> setConnection({Connection connection}) async {
+  Future<Connection> setConnection( ) async {
 
-    Connection conn = Connection();
+    Connection connection = Connection();
 
-    if(connection != null)
-      conn = connection;
-
-    await conn.init(dbName: databaseName, version: databaseVersion,
+    await connection.init(dbName: databaseName, version: databaseVersion,
         onCreate: (Database db, int version)  {
 
           if(this.migrationOnCreate().isEmpty) return;
@@ -37,7 +34,7 @@ abstract class ORMModel extends ORMBuilder {
         }
     );
 
-    Database db = conn.database;
+    Database db = connection.database;
 
     if(this.migration().isNotEmpty)
       this._migrate(db: db, migration: this.migration() );
@@ -58,7 +55,7 @@ abstract class ORMModel extends ORMBuilder {
             //print(obj);
           });*/
 
-    return conn;
+    return connection;
   }
 
   /// migration is performed only during the database creation phase

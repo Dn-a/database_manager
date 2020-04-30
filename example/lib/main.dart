@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:database_manager/database_manager.dart';
 import 'package:example/database/migration/table1.dart';
 import 'package:example/database/migration/table2.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'model/table1_model.dart';
 
@@ -93,9 +94,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //result.forEach((r) => print(r));
 
-    tb.where(column: 'i', value: 1).get().then((val) {
+    tb
+    //.where(column: 'id', value: 2)
+    //.where(column: 'name', operator: 'like', value: '%ar')
+    //.orWhere(column: 'name', operator: 'like', value: 'm%')
+    .whereNotIn(column: 'id', values: ['2','3','4'])
+    .orWhere(column: 'id', value: 1)
+    //.orWhere(column: 'email', operator: 'like', value: '8email%')
+    .get( ['*'] ).then((val) {
+
       val.forEach((a) => print(a));
-    });
+
+    }).catchError((e) => print(e));
 
     return;
 

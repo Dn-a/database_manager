@@ -5,7 +5,7 @@ class QueryBuilder {
 
   Connection connection;
 
-  Map<String, List> bindings = {
+  Map<String, List> _bindings = {
     'select': [],
     'from': [],
     'join': [],
@@ -15,7 +15,7 @@ class QueryBuilder {
     'union': [],
   };
 
-  List operators = [
+  List _operators = [
     '=',
     '<',
     '>',
@@ -48,11 +48,12 @@ class QueryBuilder {
     '!~~*',
   ];
 
-  List columns;
+  List<String> columns;
   bool distinct;
   String table;
-  List joins;
-  List<Map<String,dynamic>> wheres = [];
+  final List joins = [];
+  final List<Map<String,String>> _whereColumns = [];
+  final List<dynamic> wheresArgs = [];
   List groups;
   List havings;
   int limit;
@@ -64,7 +65,7 @@ class QueryBuilder {
   QueryBuilder({@required this.connection});
 
   QueryBuilder select({List<String> columns = const ['*']}) {
-    columns = columns;
+    this.columns = columns;
     return this;
   }
 
@@ -78,19 +79,71 @@ class QueryBuilder {
   }
 
   QueryBuilder where(
-      {@required dynamic column,
+      {@required String column,
       String operator = '=',
-      @required dynamic value,
-        String condition = 'AND'
+      @required List<dynamic> values,
+      String condition = 'AND',
       }
   ) {
-    Map<String,dynamic> whereMap = {
-      'column': column,
-      'operator': operator,
-      'value': value,
-      condition: condition
-    };
-    wheres.add(whereMap);
+
+    _whereColumns.add({
+      'column' : column,
+      'operator' : operator,
+      'condition' : condition,
+      'argsSize' : values.length.toString()
+    });
+
+    values.forEach((v) => wheresArgs.add(v) );
+
     return this;
   }
+
+  String get whereColumns {
+    final StringBuffer str = StringBuffer();
+
+    int size = _whereColumns.length;
+    int cnt = 0;
+
+    _whereColumns.forEach((clm) {
+
+      str.write('`${clm['column']}`');
+      str.write(' ');
+
+      if( clm['operator'] == 'IN' || clm['operator'] == 'NOT IN' )
+        str.write( _whereInGenerator(int.parse(clm['argsSize']), clm['operator']) );
+      else
+        str.write('${clm['operator']} ?');
+
+      if( size > 1 ){
+        String cond = _whereColumns[++cnt]['condition'];
+
+        str.write(' ');
+        str.write(cond);
+        str.write(' ');
+
+        --size;
+      }
+    });
+
+    print(str);
+    return str.toString();
+  }
+
+  /// Generate where IN ---> IN (?,?,..)
+  String _whereInGenerator(int size, String operator){
+    StringBuffer str = StringBuffer();
+
+    str.write('$operator (');
+
+    for(int i = 0; i < size; i++) {
+      str.write('?');
+      if(i+1 < size)
+      str.write(',');
+    }
+
+    str.write(')');
+
+    return str.toString();
+  }
+
 }
