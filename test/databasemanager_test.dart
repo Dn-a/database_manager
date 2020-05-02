@@ -1,70 +1,37 @@
-import 'package:database_manager/src/migrations/migrate.dart';
-import 'package:database_manager/src/migrations/migration_interface.dart';
-import 'package:database_manager/src/schema/blueprint.dart';
-import 'package:database_manager/src/schema/schema.dart';
+import 'package:database_manager/src/orm/query/query_builder.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('test migrate', () {
-    Migrate migrate = Migrate([
-      Table1(),
-      //Table2(),
-    ]);
+  group('ORM Builder', () {
+    test('give orders', () {
+      QueryBuilder query = QueryBuilder();
 
-    print(migrate.createList());
+      query.orderBy(columns: ['aa', 'bb'], type: 'asc');
 
-    //print(migrate.drop());
+      print(query.distinct);
+
+      query.groupBy(['aa', 'dd']);
+
+      print(query.groups);
+      //expect(query.orders, '');
+    });
   });
-}
 
-class Table1 implements Migration {
-  @override
-  void up() {
-    Schema.create(
-        tableName: 'table_1',
-        callback: (Blueprint table) {
-          table.integer('id').autoIncrement();
-          table.string('name').unique();
-          table.string('email').unique().nullable();
-          table.integer('user_id').defaultValue('1');
-        });
+  /*group( 'ORM Builder' , (){
 
-    Schema.table(
-        tableName: 'table_1',
-        callback: (Blueprint table) {
-          table.foreign(columns: ['user_id']).references(idList: ['id']).on(
-              tableName: 'user');
-        });
-  }
+    test('give table name', () {
+      ORMBuilder orm = ORMBuilder();
+      expect(orm.tableName, '');
+    });
 
-  @override
-  void down() {
-    Schema.dropIfExists(tableName: 'table_1');
-  }
-}
+    test('give connection', () async {
 
-class Table2 implements Migration {
-  @override
-  void up() {
-    Schema.create(
-        tableName: 'table_2',
-        callback: (Blueprint table) {
-          table.integer('id').autoIncrement();
-          table.string('title').unique();
-          table.string('column1').unique().nullable();
-          table.integer('user_id').defaultValue('1');
-        });
+      ORMBuilder orm = ORMBuilder();
+      Connection connection =  Connection();
 
-    Schema.table(
-        tableName: 'table_2',
-        callback: (Blueprint table) {
-          table.foreign(columns: ['user_id']).references(idList: ['id']).on(
-              tableName: 'user');
-        });
-  }
+      orm.setConnection(conn: connection);
 
-  @override
-  void down() {
-    Schema.dropIfExists(tableName: 'table_2');
-  }
+      //expect(orm.tableName, '');
+    });
+  });*/
 }

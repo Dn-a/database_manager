@@ -9,8 +9,8 @@ abstract class ORMModel extends ORMBuilder {
   final int databaseVersion = 1;
 
   @override
-  Future<Connection> setConnection() async {
-    Connection connection = Connection();
+  Future<Connection> setConnection({Connection conn}) async {
+    Connection connection = conn == null ? Connection() : conn;
 
     await connection.init(
         dbName: databaseName,

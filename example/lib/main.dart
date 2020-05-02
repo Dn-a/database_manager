@@ -97,19 +97,62 @@ class _MyHomePageState extends State<MyHomePage> {
     ]);
     print(ids);*/
 
-    table
-        //.where(column: 'id', value: 2)
-        //.where(column: 'name', operator: 'like', value: '%ar')
+    /*List<int> ids = await table.insert([
+      { 'name' : 'marios', 'email' : 'marios@email.com' },
+      { 'name' : 'marios', 'email' : 'marios3@email.com' },
+    ]);
+    print(ids);*/
+
+    int cnt = await table.where(column: 'name', value: 'marios').whereIn(
+        column: 'id',
+        values: [
+          '1',
+          '2',
+          '3',
+          '4',
+          '5',
+          '6',
+          '7',
+          '8'
+        ]).update({'name': 'carlitos'});
+    print(cnt);
+
+    /*table
         //.orWhere(column: 'name', operator: 'like', value: 'm%')
-        .whereNotIn(column: 'id', values: ['2', '3', '4'])
-        .orWhere(column: 'id', value: 1)
-        //.orWhere(column: 'email', operator: 'like', value: '8email%')
-        .get(['*'])
+        //.whereNotIn(column: 'id', values: ['2', '3', '4'])
+        //.select(['min(id) min','avg(id) avg','max(id) max'])
+        //.having(column: 'cnt', value: 2)
+        .having(column: 'name', value: 'carlitos')
+        .groupBy(['name','email'])
+        //.limit(5).offset(1)
+        //.distinct()
+        //.get()
+        //.where(column: 'id',value: 1)
+        .get(['id','name','email'])
         .then((val) {
           val.forEach((a) => print(a));
         })
-        .catchError((e) => print(e));
-
-    return;
+        .catchError((e) => print(e));*/
+    int a = await table.where(column: 'name', value: 'carlitos').count();
+    print('count: $a');
+    await table
+        .where(column: 'name', value: 'carlitos')
+        .get(['id', 'name']).then((list) => list.forEach((val) => print(val)));
+    print('');
+    await table
+        .select(['id', 'name'])
+        .where(column: 'name', value: 'carlitos')
+        .min('id', alias: 'min')
+        .then((val) => print(val));
+    await table
+        .select(['id', 'name'])
+        .where(column: 'name', value: 'carlitos')
+        .avg('id', alias: 'avg')
+        .then((val) => print(val));
+    await table
+        .select(['id', 'name'])
+        .where(column: 'name', value: 'carlitos')
+        .max('id', alias: 'max')
+        .then((val) => print(val));
   }
 }
