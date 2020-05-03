@@ -32,19 +32,25 @@ class ORMBuilder {
     return connection;
   }
 
-  Future<List<int>> insert(List<Map<String, dynamic>> values) async {
+  /// return LIST of last inserted ids
+  Future<List<int>> insert(List<Map<String, dynamic>> values,
+      {bool noResult = true}) async {
     Connection connection = await this.getConnection();
     Database database = connection.database;
 
     final List<int> ids = [];
-
     await database.transaction((db) async {
+      Batch btc = db.batch();
       values.forEach((value) async {
-        final int id = await db
-            .insert(tableName, value)
-            .catchError((e) => print('Insert on $tableName: $e'));
-        ids.add(id);
+        if (!noResult) {
+          int id = await db
+              .insert(tableName, value)
+              .catchError((e) => print('Insert on $tableName: $e'));
+          ids.add(id);
+        } else
+          btc.insert(tableName, value);
       });
+      return await btc.commit(noResult: noResult);
     });
 
     return ids;
@@ -74,7 +80,7 @@ class ORMBuilder {
     final String wheres = _getWhere();
     final List whereArgs = _getWhereArgs();
 
-    //_newInstanceQueryBuilder();
+    _newInstanceQueryBuilder();
 
     Connection connection = await this.getConnection();
     Database db = connection.database;

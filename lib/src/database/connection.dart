@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 typedef OnCreateCallback = void Function(Database db, int version);
+typedef OnConfigureCallback = void Function(Database db);
 
 class Connection {
   static final Connection _this = Connection._();
@@ -31,11 +32,16 @@ class Connection {
   Future<Connection> init(
       {String dbName = 'database',
       int version = 1,
+      OnConfigureCallback onConfigure,
       OnCreateCallback onCreate}) async {
     _dbName = dbName;
     final String path = await _path();
 
-    _database = await openDatabase(path, version: version, onCreate: onCreate);
+    _database =
+        await openDatabase(path, version: version, onConfigure: (Database db) {
+      if (_foreignKey.isNotEmpty) db.execute(_foreignKey);
+      if (onConfigure != null) onConfigure(db);
+    }, onCreate: onCreate);
     return this;
   }
 

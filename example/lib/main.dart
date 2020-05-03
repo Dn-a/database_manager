@@ -6,6 +6,7 @@ import 'package:example/database/migration/table2.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'model/table1_model.dart';
+import 'model/table2_model.dart';
 
 void main() => runApp(MyApp());
 
@@ -87,25 +88,55 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _dbTest() async {
+    Connection con = Connection();
+    await con.init(
+        dbName: 'db',
+        onCreate: (db, v) {
+          db.execute("CREATE TABLE IF NOT EXISTS `table` ("
+              "`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+              "`name` VARCHAR(255) NOT NULL,"
+              "`email` VARCHAR(255) NOT NULL,"
+              "`cell` VARCHAR(255) DEFAULT NULL,"
+              "UNIQUE (`email`)"
+              ");");
+        });
+    Database db = con.database;
+    await db.delete('table');
+    await db.transaction((db) async {
+      Batch btc = db.batch();
+      for (int i = 0; i < 10000; i++) {
+        //btc.execute("INSERT INTO 'table'(name,email) VALUES(?,?)",['mario','email$i@email.com']);
+        btc.insert("table", {'name': 'mario', 'email': 'email$i@email.com'});
+      }
+      return await btc.commit(noResult: true);
+    });
+
+    db.query('table').then((res) => print(res.length));
+  }
+
   Future<void> _migrate() async {
-    Table1Model table = Table1Model();
+    Table1Model table1 = Table1Model();
+    Table2Model table2 = Table2Model();
 
-    /*List<int> ids = await table.insert([
-      { 'name' : 'franco', 'email' : 'francos2@email.com' },
-      { 'name' : 'carlos', 'email' : 'carloa2@email.com' },
-      { 'name' : 'maria', 'email' : 'mariaDB2@email.com' }
-    ]);
-    print(ids);*/
+    //table2.delete();
+    //table2.insert([{'nome':'mario','cognome':'rossi'}]);
 
-    table.delete();
+    table1.delete();
+
+    List<Map<String, dynamic>> lst = [];
     for (int i = 0; i < 1000; i++)
-      table.insert([
-        {'name': 'marios', 'email': 'marios$i@email.com'}
-      ]);
+      lst.add({'name': 'marios', 'email': 'marios$i@email.com'});
+
+    List ids = await table1.insert(lst, noResult: true);
+    print(ids);
+    //table1.whereIn(column: 'id', values: ['1','2']).update({'name' :'mario'});
+    int cnt = await table1.count();
+    print(cnt);
 
     //print(ids);
 
-    /*int cnt = await table.where(column: 'name', value: 'marios').whereIn(
+    /*int cnt = await table1.where(column: 'name', value: 'marios').whereIn(
         column: 'id',
         values: [
           '1',
@@ -119,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ]).update({'name': 'carlitos'});
     print(cnt);*/
 
-    /*table
+    /*table1
         //.orWhere(column: 'name', operator: 'like', value: 'm%')
         //.whereNotIn(column: 'id', values: ['2', '3', '4'])
         //.select(['min(id) min','avg(id) avg','max(id) max'])
@@ -135,28 +166,28 @@ class _MyHomePageState extends State<MyHomePage> {
           val.forEach((a) => print(a));
         })
         .catchError((e) => print(e));*/
-    //table.delete();
-    //table.whereIn(column: 'id', values: ['1','2']).update({'name' :'mario'});
-    int cnt = await table.count();
-    print(cnt);
-    /*table.where(column: 'name', value: 'mario').get(['id','name']).then((res){
+    //table1.delete();
+    //table1.whereIn(column: 'id', values: ['1','2']).update({'name' :'mario'});
+    //int cnt = await table1.count();
+    //print(cnt);
+    /*table1.where(column: 'name', value: 'mario').get(['id','name']).then((res){
       res.forEach((v) => print(v) );
     });*/
-    /*table
+    /*table1
         .where(column: 'name', value: 'carlitos')
         .get(['id', 'name']).then((list) => list.forEach((val) => print(val)));
     print('');
-    table
+    table1
         .select(['id', 'name'])
         .where(column: 'name', value: 'carlitos')
         .min('id', alias: 'min')
         .then((val) => print(val));
-    table
+    table1
         .select(['id', 'name'])
         .where(column: 'name', value: 'carlitos')
         .avg('id', alias: 'avg')
         .then((val) => print(val));
-    table
+    table1
         .select(['id', 'name'])
         .where(column: 'name', value: 'carlitos')
         .max('id', alias: 'max')
