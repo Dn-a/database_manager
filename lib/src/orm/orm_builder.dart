@@ -32,7 +32,8 @@ class ORMBuilder {
     return connection;
   }
 
-  /// return LIST of last inserted ids
+  /// Returns a list of the last IDs entered if onResult = false, otherwise it returns an empty list
+  /// onResult is active by default because the result of each insertion reduces performance
   Future<List<int>> insert(List<Map<String, dynamic>> values,
       {bool noResult = true}) async {
     Connection connection = await this.getConnection();

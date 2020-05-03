@@ -134,8 +134,6 @@ class _MyHomePageState extends State<MyHomePage> {
     int cnt = await table1.count();
     print(cnt);
 
-    //print(ids);
-
     /*int cnt = await table1.where(column: 'name', value: 'marios').whereIn(
         column: 'id',
         values: [
