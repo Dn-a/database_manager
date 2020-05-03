@@ -117,41 +117,30 @@ class QueryBuilder {
       'condition': condition,
       'value': value
     });
-
     return this;
   }
 
   List<String> get columns {
-    final List clms = _columns.toList();
-    _columns.clear();
-    return clms;
+    return _columns;
   }
 
   set setDistinct(bool val) => _distinct = val;
   bool get distinct {
-    final bool dst = _distinct;
-    _distinct = false;
-    return dst;
+    return _distinct;
   }
 
   set setLimit(int val) => _limit = val;
   int get limit {
-    final int lmt = _limit;
-    _limit = null;
-    return lmt;
+    return _limit;
   }
 
   set setOffset(int val) => _offset = val;
   int get offset {
-    final int offt = _offset;
-    _offset = null;
-    return offt;
+    return _offset;
   }
 
   String get groups {
-    final List grps = _groups.toList();
-    _groups.clear();
-    return grps.join(',');
+    return _groups.join(',');
   }
 
   String get orders {
@@ -160,7 +149,6 @@ class QueryBuilder {
       type = type != 'asc' && type != 'desc' ? '' : type;
       return grp['column'] + (type.length > 0 ? ' $type' : '');
     }).toList();
-    _orders.clear();
     return ords.join(',');
   }
 
@@ -188,7 +176,6 @@ class QueryBuilder {
         --size;
       }
     });
-    _havings.clear();
     return str.toString();
   }
 
@@ -220,14 +207,11 @@ class QueryBuilder {
         --size;
       }
     });
-    _whereColumns.clear();
     return str.toString();
   }
 
   List<dynamic> get wheresArgs {
-    final List<dynamic> args = _wheresArgs.toList();
-    _wheresArgs.clear();
-    return args;
+    return _wheresArgs;
   }
 
   /// Generate where IN ---> IN (?,?,..)

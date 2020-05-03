@@ -13,6 +13,12 @@ class ORMBuilder {
     _query = QueryBuilder();
   }
 
+  /// The same [ORMBuilder] instance can be used to perform different queries.
+  /// After an insert, an update or a get it is necessary to perform a reset
+  /// to allow the creation of new queries with the same ORMBuilder instance.
+  /// To allow this you need to create a new [QueryBuilder] instance
+  void _newInstanceQueryBuilder() => _query = QueryBuilder();
+
   Future<Connection> setConnection({Connection conn}) async {
     _connection = conn == null ? _connection : conn;
     return _connection;
@@ -28,15 +34,16 @@ class ORMBuilder {
 
   Future<List<int>> insert(List<Map<String, dynamic>> values) async {
     Connection connection = await this.getConnection();
-    Database db = connection.database;
+    Database database = connection.database;
 
     final List<int> ids = [];
 
-    await db.transaction((db) async {
+    await database.transaction((db) async {
       values.forEach((value) async {
-        ids.add(await db
+        final int id = await db
             .insert(tableName, value)
-            .catchError((e) => print('Insert on $tableName: $e')));
+            .catchError((e) => print('Insert on $tableName: $e'));
+        ids.add(id);
       });
     });
 
@@ -44,30 +51,30 @@ class ORMBuilder {
   }
 
   Future<int> update(Map<String, dynamic> values) async {
-    String wheres = _getWhere();
-    List whereArgs = _getWhereArgs();
+    final String wheres = _getWhere();
+    final List whereArgs = _getWhereArgs();
+
+    _newInstanceQueryBuilder();
 
     Connection connection = await this.getConnection();
     Database db = connection.database;
 
-    int cnt = 0;
-
-    cnt =
-        await db.update(tableName, values, where: wheres, whereArgs: whereArgs);
-
-    return cnt;
+    return await db.update(tableName, values,
+        where: wheres, whereArgs: whereArgs);
   }
 
   Future<List<Map<String, dynamic>>> get([List<String> columns]) async {
-    bool distinct = _getDistinct();
-    int limit = _getLimit();
-    int offset = _getOffset();
-    String orderBy = _getOrderBy();
-    String groupBy = _getGroupBy();
-    String havings = _getHavings();
-    List columnss = _getColumns();
-    String wheres = _getWhere();
-    List whereArgs = _getWhereArgs();
+    final bool distinct = _getDistinct();
+    final int limit = _getLimit();
+    final int offset = _getOffset();
+    final String orderBy = _getOrderBy();
+    final String groupBy = _getGroupBy();
+    final String havings = _getHavings();
+    final List queryColumns = _getColumns();
+    final String wheres = _getWhere();
+    final List whereArgs = _getWhereArgs();
+
+    //_newInstanceQueryBuilder();
 
     Connection connection = await this.getConnection();
     Database db = connection.database;
@@ -79,10 +86,24 @@ class ORMBuilder {
         orderBy: orderBy,
         groupBy: groupBy,
         having: havings,
-        columns: columns ?? columnss,
+        columns: columns ?? queryColumns,
         where: wheres,
         whereArgs: whereArgs);
   }
+
+  Future<int> delete() async {
+    final String wheres = _getWhere();
+    final List whereArgs = _getWhereArgs();
+
+    _newInstanceQueryBuilder();
+
+    Connection connection = await this.getConnection();
+    Database db = connection.database;
+
+    return await db.delete(tableName, where: wheres, whereArgs: whereArgs);
+  }
+
+  /// Aggregates
 
   Future<int> count() async {
     final List get = await this.get();
@@ -220,8 +241,6 @@ class ORMBuilder {
         column: column, operator: operator, value: value, condition: 'OR');
     return this;
   }
-
-  /// Aggregates
 
   bool _getDistinct() {
     return _query.distinct;

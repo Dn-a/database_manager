@@ -11,15 +11,13 @@ class Table2 implements Migration {
           table.string('cognome');
         });
 
-    Schema.table(
-        tableName: 'users',
-        callback: (Blueprint table) {
-          table.unique(columns: ['nome', 'cognome']);
-        });
+    Schema.table('users', callback: (Blueprint table) {
+      table.unique(columns: ['nome', 'cognome']);
+    });
   }
 
   @override
   void down() {
-    Schema.dropIfExists(tableName: 'users');
+    Schema.dropIfExists('users');
   }
 }

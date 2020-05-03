@@ -13,22 +13,18 @@ class Table1 implements Migration {
           table.integer('user_id').defaultValue(1);
         });
 
-    Schema.table(
-        tableName: 'table_1',
-        callback: (Blueprint table) {
-          table
-              .check(" name <> 'mark' ")
-              .andCheck("email != 'email@email.com'");
-          table
-              .foreign(columns: ['user_id'])
-              .references(idList: ['id'])
-              .on(tableName: 'users')
-              .onDelete(action: 'cascade');
-        });
+    Schema.table('table_1', callback: (Blueprint table) {
+      table.check(" name <> 'mark' ").check("email != 'email@email.com'");
+      table
+          .foreign(columns: ['user_id'])
+          .references(idList: ['id'])
+          .on(tableName: 'users')
+          .onDeleteCascade();
+    });
   }
 
   @override
   void down() {
-    Schema.dropIfExists(tableName: 'table_1');
+    Schema.dropIfExists('table_1');
   }
 }

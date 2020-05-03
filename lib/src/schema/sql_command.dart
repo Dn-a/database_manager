@@ -88,7 +88,7 @@ class SQLCommand {
     return str.toString();
   }
 
-  SQLCommand andCheck(String expression) {
+  SQLCommand check(String expression) {
     _andCheck.add(expression);
     return this;
   }
@@ -137,6 +137,22 @@ class SQLCommand {
     String type = _onAction(action: action, actionType: 'delete');
     _onDelete = type;
     return this;
+  }
+
+  SQLCommand onDeleteRestrict() {
+    return this.onDelete(action: 'restrict');
+  }
+
+  SQLCommand onDeleteCascade() {
+    return this.onDelete(action: 'cascade');
+  }
+
+  SQLCommand onDeleteSetNull() {
+    return this.onDelete(action: 'set null');
+  }
+
+  SQLCommand onDeleteSetDefault() {
+    return this.onDelete(action: 'set default');
   }
 
   SQLCommand onUpdate({String action}) {

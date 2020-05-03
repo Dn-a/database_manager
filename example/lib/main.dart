@@ -97,13 +97,15 @@ class _MyHomePageState extends State<MyHomePage> {
     ]);
     print(ids);*/
 
-    /*List<int> ids = await table.insert([
-      { 'name' : 'marios', 'email' : 'marios@email.com' },
-      { 'name' : 'marios', 'email' : 'marios3@email.com' },
-    ]);
-    print(ids);*/
+    table.delete();
+    for (int i = 0; i < 1000; i++)
+      table.insert([
+        {'name': 'marios', 'email': 'marios$i@email.com'}
+      ]);
 
-    int cnt = await table.where(column: 'name', value: 'marios').whereIn(
+    //print(ids);
+
+    /*int cnt = await table.where(column: 'name', value: 'marios').whereIn(
         column: 'id',
         values: [
           '1',
@@ -115,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
           '7',
           '8'
         ]).update({'name': 'carlitos'});
-    print(cnt);
+    print(cnt);*/
 
     /*table
         //.orWhere(column: 'name', operator: 'like', value: 'm%')
@@ -133,26 +135,31 @@ class _MyHomePageState extends State<MyHomePage> {
           val.forEach((a) => print(a));
         })
         .catchError((e) => print(e));*/
-    int a = await table.where(column: 'name', value: 'carlitos').count();
-    print('count: $a');
-    await table
+    //table.delete();
+    //table.whereIn(column: 'id', values: ['1','2']).update({'name' :'mario'});
+    int cnt = await table.count();
+    print(cnt);
+    /*table.where(column: 'name', value: 'mario').get(['id','name']).then((res){
+      res.forEach((v) => print(v) );
+    });*/
+    /*table
         .where(column: 'name', value: 'carlitos')
         .get(['id', 'name']).then((list) => list.forEach((val) => print(val)));
     print('');
-    await table
+    table
         .select(['id', 'name'])
         .where(column: 'name', value: 'carlitos')
         .min('id', alias: 'min')
         .then((val) => print(val));
-    await table
+    table
         .select(['id', 'name'])
         .where(column: 'name', value: 'carlitos')
         .avg('id', alias: 'avg')
         .then((val) => print(val));
-    await table
+    table
         .select(['id', 'name'])
         .where(column: 'name', value: 'carlitos')
         .max('id', alias: 'max')
-        .then((val) => print(val));
+        .then((val) => print(val));*/
   }
 }

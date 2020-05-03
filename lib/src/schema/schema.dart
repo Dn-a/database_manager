@@ -31,8 +31,7 @@ class Schema {
     _addTable(tableName: tableName, table: table);
   }
 
-  static table(
-      {@required String tableName, @required SchemaCallback callback}) {
+  static table(String tableName, {@required SchemaCallback callback}) {
     assert(_tables[tableName] != null
         ? true
         : throw "The $tableName table does not exist");
@@ -41,7 +40,7 @@ class Schema {
     callback(table);
   }
 
-  static dropIfExists({String tableName}) {
+  static dropIfExists(String tableName) {
     final bool check = _tables.containsKey(tableName);
     assert(check ? true : throw "The $tableName table does not exist");
 
