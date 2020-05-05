@@ -33,22 +33,20 @@ class ORMBuilder {
 
   /// Returns a list of the last IDs entered if onResult = false, otherwise it returns an empty list
   /// onResult is active by default because the result of each insertion reduces performance
-  Future<List<int>> insert(List<Map<String, dynamic>> values,
-      {bool noResult = true, }) async {
+  Future<List<dynamic>> insert(List<Map<String, dynamic>> values,
+      {bool noResult = true,bool continueOnError = false }) async {
     Database database = await this.getConnection();
 
-    final List<int> ids = [];
+    List<int> ids;
     await database.transaction((db) async {
       Batch btc = db.batch();
-      values.forEach((value) async {
-        if (!noResult) {
-          int id = await db.insert(tableName, value);
-          ids.add(id);
-        } else
-          btc.insert(tableName, value);
-      });
-      if(noResult)        
-        await btc.commit(noResult: noResult);
+      values.forEach((value) => btc.insert(tableName, value) );
+      if(!noResult){
+        //final result = (await btc.commit()).map((result) => result is int ? result : null).cast<int>();
+        final result = (await btc.commit(continueOnError: continueOnError)).cast<int>();
+        ids = result;
+      }else
+        await btc.commit(noResult: true, continueOnError: continueOnError);
     }).catchError((e) => throw('Transaction Error on $tableName:  $e'));
 
     return ids;
@@ -140,7 +138,8 @@ class ORMBuilder {
   }
 
   ORMBuilder where(
-      {@required String column,
+      String column,
+      {
       String operator = '=',
       dynamic value,
       String condition = 'AND'}) {
@@ -153,14 +152,13 @@ class ORMBuilder {
   }
 
   ORMBuilder orWhere(
-      {@required String column, String operator = '=', dynamic value}) {
-    this.where(
-        column: column, operator: operator, value: value, condition: 'OR');
+      String column, {String operator = '=', dynamic value}) {
+    this.where(column, operator: operator, value: value, condition: 'OR');
     return this;
   }
 
   ORMBuilder whereIn(
-      {@required String column,
+      String column, {
       List<dynamic> values,
       String condition = 'AND'}) {
     _query.where(
@@ -168,14 +166,13 @@ class ORMBuilder {
     return this;
   }
 
-  ORMBuilder orWhereIn({@required String column, List<dynamic> values}) {
-    this.whereIn(column: column, values: values, condition: 'OR');
+  ORMBuilder orWhereIn(String column, {List<dynamic> values}) {
+    this.whereIn(column, values: values, condition: 'OR');
     return this;
   }
 
   ORMBuilder whereNotIn(
-      {@required String column,
-      List<dynamic> values,
+      String column, {List<dynamic> values,
       String condition = 'AND'}) {
     _query.where(
         column: column,
@@ -185,25 +182,25 @@ class ORMBuilder {
     return this;
   }
 
-  ORMBuilder orWhereNotIn({@required String column, List<dynamic> values}) {
-    this.whereNotIn(column: column, values: values, condition: 'OR');
+  ORMBuilder orWhereNotIn(String column, {List<dynamic> values}) {
+    this.whereNotIn(column, values: values, condition: 'OR');
     return this;
   }
 
   /// Ordering, Grouping, Limit & Offset
 
-  ORMBuilder orderBy({String column, String type, List<String> columns}) {
-    _query.orderBy(column: column, type: type, columns: columns);
+  ORMBuilder orderBy(List<String> columns, {String type}) {
+    _query.orderBy( columns: columns, type: type);
     return this;
   }
 
-  ORMBuilder orderByDesc({String column, List<String> columns}) {
-    this.orderBy(column: column, type: 'DESC', columns: columns);
+  ORMBuilder orderByDesc(List<String> columns) {
+    this.orderBy(columns, type: 'DESC');
     return this;
   }
 
-  ORMBuilder orderByAsc({String column, List<String> columns}) {
-    this.orderBy(column: column, type: 'ASC', columns: columns);
+  ORMBuilder orderByAsc(List<String> columns) {
+    this.orderBy(columns, type: 'ASC');
     return this;
   }
 

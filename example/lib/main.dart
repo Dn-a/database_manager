@@ -125,14 +125,23 @@ class _MyHomePageState extends State<MyHomePage> {
     table1.delete();
 
     List<Map<String, dynamic>> lst = [];
+    lst.add({'name': 'marios', 'email': 'marios100@email.com'});
+    lst.add({'name': 'marios', 'email': 'marios200@email.com'});
     for (int i = 0; i < 10000; i++)
       lst.add({'name': 'marios', 'email': 'marios$i@email.com'});
 
-    List ids = await table1.insert(lst, noResult: true).catchError((e) => print(e));
+    List ids = await table1.insert(lst, noResult: true, continueOnError: false).catchError((e) => print(e));
     print(ids);
     //table1.whereIn(column: 'id', values: ['1','2']).update({'name' :'mario'});
     int cnt = await table1.count();
     print(cnt);
+
+    //table1.whereIn('email', values: ['marios2@email.com','marios3@email.com','marios20000@email.com']);
+    //table1.limit(2);
+    //table1.get();
+    //table1.insert([{'name': 'marios', 'email': 'marios20000@email.com'}]);
+    //int cnt2 = await table1.count();
+    //table1.get(['name','email']).then((r) => print(r) );
 
     /*int cnt = await table1.where(column: 'name', value: 'marios').whereIn(
         column: 'id',
