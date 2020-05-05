@@ -1,13 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
-import '../database/connection.dart';
 import '../orm/query/query_builder.dart';
 
 class ORMBuilder {
   final String tableName = '';
 
   QueryBuilder _query;
-  Connection _connection;
+  Database _connection;
 
   ORMBuilder() {
     _query = QueryBuilder();
@@ -19,40 +18,38 @@ class ORMBuilder {
   /// To allow this you need to create a new [QueryBuilder] instance
   void _newInstanceQueryBuilder() => _query = QueryBuilder();
 
-  Future<Connection> setConnection({Connection conn}) async {
+  Future<Database> setConnection({Database conn}) async {
     _connection = conn == null ? _connection : conn;
     return _connection;
   }
 
-  Future<Connection> getConnection() async {
-    Connection connection = await this.setConnection();
-    assert(connection != null
+  Future<Database> getConnection() async {
+    Database database = await this.setConnection();
+    assert(database != null
         ? true
         : throw "ORMBuilder: Connection is not initialized");
-    return connection;
+    return database;
   }
 
   /// Returns a list of the last IDs entered if onResult = false, otherwise it returns an empty list
   /// onResult is active by default because the result of each insertion reduces performance
   Future<List<int>> insert(List<Map<String, dynamic>> values,
-      {bool noResult = true}) async {
-    Connection connection = await this.getConnection();
-    Database database = connection.database;
+      {bool noResult = true, }) async {
+    Database database = await this.getConnection();
 
     final List<int> ids = [];
     await database.transaction((db) async {
       Batch btc = db.batch();
       values.forEach((value) async {
         if (!noResult) {
-          int id = await db
-              .insert(tableName, value)
-              .catchError((e) => print('Insert on $tableName: $e'));
+          int id = await db.insert(tableName, value);
           ids.add(id);
         } else
           btc.insert(tableName, value);
       });
-      return await btc.commit(noResult: noResult);
-    });
+      if(noResult)        
+        await btc.commit(noResult: noResult);
+    }).catchError((e) => throw('Transaction Error on $tableName:  $e'));
 
     return ids;
   }
@@ -63,10 +60,9 @@ class ORMBuilder {
 
     _newInstanceQueryBuilder();
 
-    Connection connection = await this.getConnection();
-    Database db = connection.database;
+    Database database = await this.getConnection();
 
-    return await db.update(tableName, values,
+    return await database.update(tableName, values,
         where: wheres, whereArgs: whereArgs);
   }
 
@@ -83,10 +79,9 @@ class ORMBuilder {
 
     _newInstanceQueryBuilder();
 
-    Connection connection = await this.getConnection();
-    Database db = connection.database;
+    Database database = await this.getConnection();
 
-    return await db.query(tableName,
+    return await database.query(tableName,
         distinct: distinct,
         limit: limit,
         offset: offset,
@@ -104,17 +99,16 @@ class ORMBuilder {
 
     _newInstanceQueryBuilder();
 
-    Connection connection = await this.getConnection();
-    Database db = connection.database;
+    Database database = await this.getConnection();
 
-    return await db.delete(tableName, where: wheres, whereArgs: whereArgs);
+    return await database.delete(tableName, where: wheres, whereArgs: whereArgs);
   }
 
   /// Aggregates
 
   Future<int> count() async {
-    final List get = await this.get();
-    return get.length;
+    final List get = await this.get(['count(*) cnt']);
+    return get.first['cnt'];
   }
 
   Future<Map<String, dynamic>> min(String column, {String alias = ''}) async {

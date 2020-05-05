@@ -9,7 +9,7 @@ abstract class ORMModel extends ORMBuilder {
   final int databaseVersion = 1;
 
   @override
-  Future<Connection> setConnection({Connection conn}) async {
+  Future<Database> setConnection({Database conn}) async {
     Connection connection = conn == null ? Connection() : conn;
 
     await connection.init(
@@ -24,22 +24,12 @@ abstract class ORMModel extends ORMBuilder {
           this._migrate(db: db, migration: migration);
         });
 
-    Database db = connection.database;
+    Database database = connection.database;
 
     final List migration = this.migration();
-    if (migration.isNotEmpty) this._migrate(db: db, migration: migration);
+    if (migration.isNotEmpty) this._migrate(db: database, migration: migration);
 
-    /*_dbHelper.raw(sql: 'PRAGMA table_info([users])').then((val) {
-            List<dynamic> obj = [];
-            val.forEach((a) {
-              dynamic b = a['name'];
-              obj.add(b);
-              print(a);
-            });
-            //print(obj);
-          });*/
-
-    return connection;
+    return database;
   }
 
   /// migration is performed only during the database creation phase

@@ -125,10 +125,10 @@ class _MyHomePageState extends State<MyHomePage> {
     table1.delete();
 
     List<Map<String, dynamic>> lst = [];
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 10000; i++)
       lst.add({'name': 'marios', 'email': 'marios$i@email.com'});
 
-    List ids = await table1.insert(lst, noResult: true);
+    List ids = await table1.insert(lst, noResult: true).catchError((e) => print(e));
     print(ids);
     //table1.whereIn(column: 'id', values: ['1','2']).update({'name' :'mario'});
     int cnt = await table1.count();
