@@ -1,3 +1,5 @@
+
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database/connection.dart';
 import '../migrations/migrate.dart';
@@ -5,7 +7,9 @@ import '../migrations/migration_interface.dart';
 import 'orm_builder.dart';
 
 abstract class ORMModel extends ORMBuilder {
+  @protected
   final String databaseName = 'database';
+  @protected
   final int databaseVersion = 1;
 
   @override
@@ -16,10 +20,11 @@ abstract class ORMModel extends ORMBuilder {
         dbName: databaseName,
         version: databaseVersion,
         onCreate: (Database db, int version) {
-          final List migration = this.migrationOnCreate();
-          if (migration.isEmpty) return;
 
           print("Database '$databaseName' created | version: $databaseVersion");
+
+          final List migration = this.migrationOnCreate();
+          if (migration.isEmpty) return;
 
           this._migrate(db: db, migration: migration);
         });
@@ -27,7 +32,7 @@ abstract class ORMModel extends ORMBuilder {
     Database database = connection.database;
 
     final List migration = this.migration();
-    if (migration.isNotEmpty) this._migrate(db: database, migration: migration);
+    if (migration.isNotEmpty) await this._migrate(db: database, migration: migration);
 
     return database;
   }
@@ -42,13 +47,13 @@ abstract class ORMModel extends ORMBuilder {
     return [];
   }
 
-  void _migrate({Database db, List<Migration> migration}) {
+  Future<void> _migrate({Database db, List<Migration> migration}) async {
+
     Migrate migrate = Migrate(migration);
     List<String> sqlStringList = migrate.createList();
-
-    db
+    await db
         .transaction((tran) async =>
-            sqlStringList.forEach((sql) async => await tran.execute(sql)))
-        .catchError((error) => print('On migrate: $error'));
+        sqlStringList.forEach((sql) async => await tran.execute(sql)))
+        .catchError((error) => throw('On transaction error: $error') );
   }
 }

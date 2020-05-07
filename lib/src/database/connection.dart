@@ -8,6 +8,7 @@ import 'package:sqflite/sqflite.dart';
 
 typedef OnCreateCallback = void Function(Database db, int version);
 typedef OnConfigureCallback = void Function(Database db);
+typedef OnUpgradeCallback = void Function(Database db, int oldVersion, int newVersion);
 
 class Connection {
   static final Connection _this = Connection._();
@@ -33,7 +34,8 @@ class Connection {
       {String dbName = 'database',
       int version = 1,
       OnConfigureCallback onConfigure,
-      OnCreateCallback onCreate}) async {
+      OnCreateCallback onCreate,
+      OnUpgradeCallback onUpgrade}) async {
     _dbName = dbName;
     final String path = await _path();
 
@@ -41,7 +43,7 @@ class Connection {
         await openDatabase(path, version: version, onConfigure: (Database db) {
       if (_foreignKey.isNotEmpty) db.execute(_foreignKey);
       if (onConfigure != null) onConfigure(db);
-    }, onCreate: onCreate);
+    }, onCreate: onCreate, onUpgrade: onUpgrade);
     return this;
   }
 

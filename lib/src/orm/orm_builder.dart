@@ -23,7 +23,7 @@ class ORMBuilder {
     return _connection;
   }
 
-  Future<Database> getConnection() async {
+  Future<Database> _getConnection() async {
     Database database = await this.setConnection();
     assert(database != null
         ? true
@@ -34,8 +34,8 @@ class ORMBuilder {
   /// Returns a list of the last IDs entered if onResult = false, otherwise it returns an empty list
   /// onResult is active by default because the result of each insertion reduces performance
   Future<List<dynamic>> insert(List<Map<String, dynamic>> values,
-      {bool noResult = true,bool continueOnError = false }) async {
-    Database database = await this.getConnection();
+      {bool noResult = true, bool continueOnError = false }) async {
+    Database database = await this._getConnection();
 
     List<int> ids;
     await database.transaction((db) async {
@@ -58,7 +58,7 @@ class ORMBuilder {
 
     _newInstanceQueryBuilder();
 
-    Database database = await this.getConnection();
+    Database database = await this._getConnection();
 
     return await database.update(tableName, values,
         where: wheres, whereArgs: whereArgs);
@@ -77,7 +77,7 @@ class ORMBuilder {
 
     _newInstanceQueryBuilder();
 
-    Database database = await this.getConnection();
+    Database database = await this._getConnection();
 
     return await database.query(tableName,
         distinct: distinct,
@@ -97,7 +97,7 @@ class ORMBuilder {
 
     _newInstanceQueryBuilder();
 
-    Database database = await this.getConnection();
+    Database database = await this._getConnection();
 
     return await database.delete(tableName, where: wheres, whereArgs: whereArgs);
   }
