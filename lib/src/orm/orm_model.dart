@@ -20,36 +20,27 @@ abstract class ORMModel extends ORMBuilder {
         dbName: databaseName,
         version: databaseVersion,
         onCreate: (Database db, int version) {
-
           print("Database '$databaseName' created | version: $databaseVersion");
-
-          final List migration = this.migrationOnCreate();
-          if (migration.isEmpty) return;
-
-          this._migrate(db: db, migration: migration);
+          this._migrate(db: db);
+        },
+        onUpgrade: (Database db, int old, int next) {
+          if(next > old)
+            this._migrate(db: db);
         });
 
     Database database = connection.database;
-
-    final List migration = this.migration();
-    if (migration.isNotEmpty) await this._migrate(db: database, migration: migration);
 
     return database;
   }
 
   /// migration is performed only during the database creation phase
-  List<Migration> migrationOnCreate() {
-    return [];
-  }
-
-  /// migration is performed each time the model is invoked
   List<Migration> migration() {
     return [];
   }
 
-  Future<void> _migrate({Database db, List<Migration> migration}) async {
-
-    Migrate migrate = Migrate(migration);
+  Future<void> _migrate({ Database db }) async {
+    final List migration = this.migration();
+    final Migrate migrate = Migrate(migration);
     List<String> sqlStringList = migrate.createList();
     await db
         .transaction((tran) async =>

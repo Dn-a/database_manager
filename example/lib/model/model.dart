@@ -13,7 +13,7 @@ class Model extends ORMModel {
   var _a = 1;
 
   @override
-  List<Migration> migrationOnCreate() {
+  List<Migration> migration() {
     return [Table1(), Table2()];
   }
 }

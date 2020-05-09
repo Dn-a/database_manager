@@ -131,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
       lst.add({'name': 'marios', 'email': 'marios$i@email.com'});
 
     List ids = await table1.insert(lst, noResult: true, continueOnError: false).catchError((e) => print(e));
-    print(ids);
+    //print(ids);
     //table1.whereIn(column: 'id', values: ['1','2']).update({'name' :'mario'});
     int cnt = await table1.count();
     print(cnt);
