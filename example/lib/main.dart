@@ -112,10 +112,12 @@ class _MyHomePageState extends State<MyHomePage> {
       return await btc.commit(noResult: true);
     });
 
-    db.query('table').then((res) => print(res.length));
+    db.query('table', where: 'exists (select * from "table" tb where tb.id = id and name =?)',whereArgs: ['mario']).then((res) => print(res));
   }
 
   Future<void> _migrate() async {
+    //_dbTest();return;
+
     Table1Model table1 = Table1Model();
     Table2Model table2 = Table2Model();
 
@@ -129,6 +131,9 @@ class _MyHomePageState extends State<MyHomePage> {
     //lst.add({'name': 'marios', 'email': 'marios200@email.com'});
     for (int i = 0; i < 1000; i++)
       lst.add({'name': 'marios', 'email': 'marios$i@email.com'});
+
+    /*table1.subQuery((ORMBuilder query){
+    });*/
 
     List ids = await table1.insert(lst, noResult: true, continueOnError: false).catchError((e) => print(e));
     //print(ids);

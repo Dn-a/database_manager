@@ -53,6 +53,7 @@ class QueryBuilder {
   final List _groups = [];
   final List<Map<String, String>> _orders = [];
   final List<Map<String, dynamic>> _havings = [];
+  final List<Map<String, dynamic>> _subQueries = [];
   int _limit;
   int _offset;
   List unions;
@@ -60,7 +61,7 @@ class QueryBuilder {
   int unionOffset;
 
   QueryBuilder from({String table}) {
-    table = table;
+    _table = table;
     return this;
   }
 
@@ -87,17 +88,10 @@ class QueryBuilder {
     return this;
   }
 
-  QueryBuilder orderBy({String column, String type, List<String> columns}) {
-    assert((column != null && columns == null) ||
-            (column == null && columns != null)
-        ? true
-        : throw 'QueryBuilder: set column or columns field');
-    if (columns == null)
-      _orders.add({'column': column, 'type': type});
-    else
-      columns.forEach((col) {
-        _orders.add({'column': col, 'type': type});
-      });
+  QueryBuilder orderBy(List<String> columns, {String type}) {
+    columns.forEach((col) {
+      _orders.add({'column': col, 'type': type});
+    });
     return this;
   }
 
@@ -117,6 +111,11 @@ class QueryBuilder {
       'condition': condition,
       'value': value
     });
+    return this;
+  }
+
+  QueryBuilder subQuery(){
+    //_subQueries;
     return this;
   }
 

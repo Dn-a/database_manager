@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import '../orm/query/query_builder.dart';
 
+typedef SubQueryCallback = void Function(ORMBuilder query);
+
 class ORMBuilder {
   final String tableName = '';
 
@@ -132,6 +134,11 @@ class ORMBuilder {
     return this;
   }
 
+  ORMBuilder from(String table) {
+    _query.from(table: table);
+    return this;
+  }
+
   ORMBuilder distinct([bool active = true]) {
     _query.setDistinct = active;
     return this;
@@ -141,14 +148,26 @@ class ORMBuilder {
       String column,
       {
       String operator = '=',
-      dynamic value,
-      String condition = 'AND'}) {
-    _query.where(
-        column: column,
-        operator: operator,
-        values: [value],
-        condition: condition);
+      @required dynamic value,
+      String condition = 'AND',
+      SubQueryCallback nested}) {
+
+    if(nested!=null)
+      nested(_subQuery());
+    else
+      _query.where(
+          column: column,
+          operator: operator,
+          values: [value],
+          condition: condition);
+
     return this;
+  }
+
+  /// create a sub-query
+  ORMBuilder _subQuery(){
+    final ORMBuilder queryBuilder = ORMBuilder();
+    return queryBuilder;
   }
 
   ORMBuilder orWhere(
@@ -190,7 +209,7 @@ class ORMBuilder {
   /// Ordering, Grouping, Limit & Offset
 
   ORMBuilder orderBy(List<String> columns, {String type}) {
-    _query.orderBy( columns: columns, type: type);
+    _query.orderBy(columns, type: type);
     return this;
   }
 

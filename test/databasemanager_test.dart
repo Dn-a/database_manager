@@ -6,7 +6,7 @@ void main() {
     test('give orders', () {
       QueryBuilder query = QueryBuilder();
 
-      query.orderBy(columns: ['aa', 'bb'], type: 'asc');
+      query.orderBy(['aa', 'bb'], type: 'asc');
 
       print(query.distinct);
 

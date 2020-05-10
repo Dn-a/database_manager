@@ -6,4 +6,7 @@ export 'src/migrations/migration_interface.dart';
 export 'src/migrations/migrate.dart';
 
 export 'src/orm/orm_model.dart';
+
+export 'src/orm/orm_builder.dart';
+
 export 'src/database/connection.dart';

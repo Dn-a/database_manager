@@ -10,8 +10,6 @@ class Model extends ORMModel {
   @override
   final int databaseVersion = 1;
 
-  var _a = 1;
-
   @override
   List<Migration> migration() {
     return [Table1(), Table2()];
