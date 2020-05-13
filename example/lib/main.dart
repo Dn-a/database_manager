@@ -126,14 +126,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     table1.delete();
 
+    table1.where(nested: (query) => query.where(value: null));
+
     List<Map<String, dynamic>> lst = [];
     //lst.add({'name': 'marios', 'email': 'marios100@email.com'});
     //lst.add({'name': 'marios', 'email': 'marios200@email.com'});
     for (int i = 0; i < 1000; i++)
       lst.add({'name': 'marios', 'email': 'marios$i@email.com'});
-
-    /*table1.subQuery((ORMBuilder query){
-    });*/
 
     List ids = await table1.insert(lst, noResult: true, continueOnError: false).catchError((e) => print(e));
     //print(ids);

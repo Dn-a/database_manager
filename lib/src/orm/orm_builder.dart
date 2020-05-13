@@ -145,8 +145,8 @@ class ORMBuilder {
   }
 
   ORMBuilder where(
-      String column,
       {
+      String column,
       String operator = '=',
       @required dynamic value,
       String condition = 'AND',
@@ -171,13 +171,14 @@ class ORMBuilder {
   }
 
   ORMBuilder orWhere(
-      String column, {String operator = '=', dynamic value}) {
-    this.where(column, operator: operator, value: value, condition: 'OR');
+      {String column, String operator = '=', dynamic value}) {
+    this.where(column: column, operator: operator, value: value, condition: 'OR');
     return this;
   }
 
   ORMBuilder whereIn(
-      String column, {
+      {
+      String column,
       List<dynamic> values,
       String condition = 'AND'}) {
     _query.where(
@@ -185,13 +186,13 @@ class ORMBuilder {
     return this;
   }
 
-  ORMBuilder orWhereIn(String column, {List<dynamic> values}) {
-    this.whereIn(column, values: values, condition: 'OR');
+  ORMBuilder orWhereIn({String column, List<dynamic> values}) {
+    this.whereIn(column: column, values: values, condition: 'OR');
     return this;
   }
 
   ORMBuilder whereNotIn(
-      String column, {List<dynamic> values,
+      {String column, List<dynamic> values,
       String condition = 'AND'}) {
     _query.where(
         column: column,
@@ -201,8 +202,8 @@ class ORMBuilder {
     return this;
   }
 
-  ORMBuilder orWhereNotIn(String column, {List<dynamic> values}) {
-    this.whereNotIn(column, values: values, condition: 'OR');
+  ORMBuilder orWhereNotIn({String column, List<dynamic> values}) {
+    this.whereNotIn(column: column, values: values, condition: 'OR');
     return this;
   }
 
