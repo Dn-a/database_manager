@@ -10,7 +10,7 @@ class Migrate {
   }
 
   /// List of SQL String from all tables
-  List<String> createList() {
+  List<String> create() {
     _migration.forEach((m) => m.up());
     return Schema.getSQLList();
   }

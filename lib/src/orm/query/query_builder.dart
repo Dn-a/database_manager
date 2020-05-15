@@ -75,6 +75,7 @@ class QueryBuilder {
     String operator = '=',
     @required List<dynamic> values,
     String condition = 'AND',
+    String nested
   }) {
     _whereColumns.add({
       'column': column,
@@ -115,8 +116,12 @@ class QueryBuilder {
   }
 
   QueryBuilder subQuery(){
-    //_subQueries;
+
     return this;
+  }
+
+  String get table {
+    return _table;
   }
 
   List<String> get columns {

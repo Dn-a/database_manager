@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     table1.delete();
 
-    table1.where(nested: (query) => query.where(value: null));
+    table1.where(nested: (query) => query.where(column: 'aa', value: 'suca'));
 
     List<Map<String, dynamic>> lst = [];
     //lst.add({'name': 'marios', 'email': 'marios100@email.com'});

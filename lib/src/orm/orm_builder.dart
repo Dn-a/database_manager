@@ -83,14 +83,15 @@ class ORMBuilder {
 
     return await database.query(tableName,
         distinct: distinct,
-        limit: limit,
-        offset: offset,
-        orderBy: orderBy,
-        groupBy: groupBy,
-        having: havings,
         columns: columns ?? queryColumns,
         where: wheres,
-        whereArgs: whereArgs);
+        whereArgs: whereArgs,
+        orderBy: orderBy,
+        groupBy: groupBy,
+        limit: limit,
+        offset: offset,
+        having: havings,
+    );
   }
 
   Future<int> delete() async {
@@ -146,14 +147,17 @@ class ORMBuilder {
 
   ORMBuilder where(
       {
-      String column,
+      @required String column,
       String operator = '=',
       @required dynamic value,
       String condition = 'AND',
       SubQueryCallback nested}) {
 
-    if(nested!=null)
-      nested(_subQuery());
+    if(nested!=null){
+      ORMBuilder subQuery = _subQuery;
+      nested(subQuery);
+      print(_getRawQuery(subQuery));
+    }
     else
       _query.where(
           column: column,
@@ -165,34 +169,59 @@ class ORMBuilder {
   }
 
   /// create a sub-query
-  ORMBuilder _subQuery(){
+  ORMBuilder get _subQuery {
     final ORMBuilder queryBuilder = ORMBuilder();
     return queryBuilder;
   }
 
+  String _getRawQuery(ORMBuilder query){
+    StringBuffer str = StringBuffer();
+    str.write('SELECT ');
+    if(query._getDistinct())
+      str.write('DISTINCT ');
+    str.write(' FROM ');
+    str.write(query._getTable());
+    str.write(' WHERE ');
+    str.write(query._getWhere());
+    str.write(' ');
+    str.write(query._getGroupBy());
+    str.write(' ');
+    str.write(query._getOrderBy());
+    str.write(' ');
+    if(query._getLimit() != null){
+      str.write('LIMIT ');
+      str.write(query._getLimit());
+      if(query._getOffset()!=null){
+        str.write(',');
+        str.write(query._getOffset());
+      }
+    }
+    return str.toString();
+  }
+
   ORMBuilder orWhere(
-      {String column, String operator = '=', dynamic value}) {
+      {@required String column, String operator = '=', @required dynamic value}) {
     this.where(column: column, operator: operator, value: value, condition: 'OR');
     return this;
   }
 
   ORMBuilder whereIn(
       {
-      String column,
-      List<dynamic> values,
+      @required String column,
+      @required List<dynamic> values,
       String condition = 'AND'}) {
     _query.where(
         column: column, operator: 'IN', values: values, condition: condition);
     return this;
   }
 
-  ORMBuilder orWhereIn({String column, List<dynamic> values}) {
+  ORMBuilder orWhereIn({@required String column, @required List<dynamic> values}) {
     this.whereIn(column: column, values: values, condition: 'OR');
     return this;
   }
 
   ORMBuilder whereNotIn(
-      {String column, List<dynamic> values,
+      {@required String column, @required List<dynamic> values,
       String condition = 'AND'}) {
     _query.where(
         column: column,
@@ -202,7 +231,7 @@ class ORMBuilder {
     return this;
   }
 
-  ORMBuilder orWhereNotIn({String column, List<dynamic> values}) {
+  ORMBuilder orWhereNotIn({@required String column, @required List<dynamic> values}) {
     this.whereNotIn(column: column, values: values, condition: 'OR');
     return this;
   }
@@ -246,7 +275,7 @@ class ORMBuilder {
   ORMBuilder having(
       {@required String column,
       String operator = '=',
-      dynamic value,
+      @required dynamic value,
       String condition = 'AND'}) {
     _query.having(
         column: column, operator: operator, value: value, condition: condition);
@@ -254,10 +283,14 @@ class ORMBuilder {
   }
 
   ORMBuilder orHaving(
-      {@required String column, String operator = '=', dynamic value}) {
+      {@required String column, String operator = '=', @required dynamic value}) {
     this.having(
         column: column, operator: operator, value: value, condition: 'OR');
     return this;
+  }
+
+  String _getTable() {
+    return _query.table;
   }
 
   bool _getDistinct() {
@@ -299,4 +332,6 @@ class ORMBuilder {
     String str = _query.havings;
     return str.isEmpty ? null : str;
   }
+
+
 }

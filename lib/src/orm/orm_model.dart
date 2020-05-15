@@ -41,7 +41,7 @@ abstract class ORMModel extends ORMBuilder {
   Future<void> _migrate({ Database db }) async {
     final List migration = this.migration();
     final Migrate migrate = Migrate(migration);
-    List<String> sqlStringList = migrate.createList();
+    List<String> sqlStringList = migrate.create();
     await db
         .transaction((tran) async =>
         sqlStringList.forEach((sql) async => await tran.execute(sql)))
