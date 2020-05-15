@@ -112,7 +112,9 @@ class _MyHomePageState extends State<MyHomePage> {
       return await btc.commit(noResult: true);
     });
 
-    db.query('table', where: 'exists (select * from "table" tb where tb.id = id and name =?)',whereArgs: ['mario']).then((res) => print(res));
+    db.query('table',
+        where: 'exists (select * from "table" tb where tb.id = id and name =?)',
+        whereArgs: ['mario']).then((res) => print(res));
   }
 
   Future<void> _migrate() async {
@@ -126,18 +128,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
     table1.delete();
 
-    table1.where(nested: (query) => query.where(column: 'aa', value: 'suca'));
-
     List<Map<String, dynamic>> lst = [];
-    //lst.add({'name': 'marios', 'email': 'marios100@email.com'});
-    //lst.add({'name': 'marios', 'email': 'marios200@email.com'});
     for (int i = 0; i < 1000; i++)
       lst.add({'name': 'marios', 'email': 'marios$i@email.com'});
 
-    List ids = await table1.insert(lst, noResult: true, continueOnError: false).catchError((e) => print(e));
+    List ids = await table1
+        .insert(lst, noResult: true, continueOnError: false)
+        .catchError((e) => print(e));
     //print(ids);
-    //table1.whereIn(column: 'id', values: ['1','2']).update({'name' :'mario'});
-    int cnt = await table1.count();
+    int cnt = await table1
+        .where(
+            nested: (query) => query.where(
+                nested: (query) => query.where(nested: (query) => query
+                    //.where(column: 'email', operator: 'like', value: 'marios11%')
+
+                    ))
+            //.limit(1)
+            )
+        .where(column: 'name', operator: 'like', value: 'marios')
+        .count();
     print(cnt);
 
     //table1.whereIn('email', values: ['marios2@email.com','marios3@email.com','marios20000@email.com']);

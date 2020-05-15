@@ -22,7 +22,8 @@ class ColumnDefinition {
 
   final String _defaultValueAssertMsg =
       'be sure to use only one of the following parameters: nullable, defaultValue, useCurrent, autoIncrement';
-  final String _indexCommandAssertMsg = '(Column definition) You can only have one KEY';
+  final String _indexCommandAssertMsg =
+      '(Column definition) You can only have one KEY';
 
   String getSQLColumn() {
     final String notNull =

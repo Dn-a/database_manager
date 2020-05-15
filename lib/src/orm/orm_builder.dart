@@ -1,3 +1,4 @@
+import 'package:database_manager/src/orm/query/raw_query_builder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import '../orm/query/query_builder.dart';
@@ -36,20 +37,21 @@ class ORMBuilder {
   /// Returns a list of the last IDs entered if onResult = false, otherwise it returns an empty list
   /// onResult is active by default because the result of each insertion reduces performance
   Future<List<dynamic>> insert(List<Map<String, dynamic>> values,
-      {bool noResult = true, bool continueOnError = false }) async {
+      {bool noResult = true, bool continueOnError = false}) async {
     Database database = await this._getConnection();
 
     List<int> ids;
     await database.transaction((db) async {
       Batch btc = db.batch();
-      values.forEach((value) => btc.insert(tableName, value) );
-      if(!noResult){
+      values.forEach((value) => btc.insert(tableName, value));
+      if (!noResult) {
         //final result = (await btc.commit()).map((result) => result is int ? result : null).cast<int>();
-        final result = (await btc.commit(continueOnError: continueOnError)).cast<int>();
+        final result =
+            (await btc.commit(continueOnError: continueOnError)).cast<int>();
         ids = result;
-      }else
+      } else
         await btc.commit(noResult: true, continueOnError: continueOnError);
-    }).catchError((e) => throw('Transaction Error on $tableName:  $e'));
+    }).catchError((e) => throw ('Transaction Error on $tableName:  $e'));
 
     return ids;
   }
@@ -81,16 +83,17 @@ class ORMBuilder {
 
     Database database = await this._getConnection();
 
-    return await database.query(tableName,
-        distinct: distinct,
-        columns: columns ?? queryColumns,
-        where: wheres,
-        whereArgs: whereArgs,
-        orderBy: orderBy,
-        groupBy: groupBy,
-        limit: limit,
-        offset: offset,
-        having: havings,
+    return await database.query(
+      tableName,
+      distinct: distinct,
+      columns: columns ?? queryColumns,
+      where: wheres,
+      whereArgs: whereArgs,
+      orderBy: orderBy,
+      groupBy: groupBy,
+      limit: limit,
+      offset: offset,
+      having: havings,
     );
   }
 
@@ -102,7 +105,8 @@ class ORMBuilder {
 
     Database database = await this._getConnection();
 
-    return await database.delete(tableName, where: wheres, whereArgs: whereArgs);
+    return await database.delete(tableName,
+        where: wheres, whereArgs: whereArgs);
   }
 
   /// Aggregates
@@ -146,93 +150,78 @@ class ORMBuilder {
   }
 
   ORMBuilder where(
-      {
-      @required String column,
+      {String column,
       String operator = '=',
-      @required dynamic value,
+      dynamic value,
       String condition = 'AND',
       SubQueryCallback nested}) {
-
-    if(nested!=null){
-      ORMBuilder subQuery = _subQuery;
-      nested(subQuery);
-      print(_getRawQuery(subQuery));
-    }
-    else
-      _query.where(
-          column: column,
-          operator: operator,
-          values: [value],
-          condition: condition);
+    _query.where(
+        column: column,
+        operator: operator,
+        values: [value],
+        condition: condition,
+        nested: _subQuery(nested));
 
     return this;
   }
 
-  /// create a sub-query
-  ORMBuilder get _subQuery {
-    final ORMBuilder queryBuilder = ORMBuilder();
-    return queryBuilder;
-  }
-
-  String _getRawQuery(ORMBuilder query){
-    StringBuffer str = StringBuffer();
-    str.write('SELECT ');
-    if(query._getDistinct())
-      str.write('DISTINCT ');
-    str.write(' FROM ');
-    str.write(query._getTable());
-    str.write(' WHERE ');
-    str.write(query._getWhere());
-    str.write(' ');
-    str.write(query._getGroupBy());
-    str.write(' ');
-    str.write(query._getOrderBy());
-    str.write(' ');
-    if(query._getLimit() != null){
-      str.write('LIMIT ');
-      str.write(query._getLimit());
-      if(query._getOffset()!=null){
-        str.write(',');
-        str.write(query._getOffset());
-      }
-    }
-    return str.toString();
-  }
-
   ORMBuilder orWhere(
-      {@required String column, String operator = '=', @required dynamic value}) {
-    this.where(column: column, operator: operator, value: value, condition: 'OR');
+      {@required String column,
+      String operator = '=',
+      @required dynamic value,
+      SubQueryCallback nested}) {
+    this.where(
+        column: column,
+        operator: operator,
+        value: value,
+        condition: 'OR',
+        nested: nested);
     return this;
   }
 
   ORMBuilder whereIn(
-      {
-      @required String column,
+      {@required String column,
       @required List<dynamic> values,
-      String condition = 'AND'}) {
+      String condition = 'AND',
+      SubQueryCallback nested}) {
     _query.where(
-        column: column, operator: 'IN', values: values, condition: condition);
+        column: column,
+        operator: 'IN',
+        values: values,
+        condition: condition,
+        nested: _subQuery(nested));
     return this;
   }
 
-  ORMBuilder orWhereIn({@required String column, @required List<dynamic> values}) {
-    this.whereIn(column: column, values: values, condition: 'OR');
+  ORMBuilder orWhereIn(
+      {@required String column,
+      @required List<dynamic> values,
+      SubQueryCallback nested}) {
+    this.whereIn(
+        column: column, values: values, condition: 'OR', nested: nested);
     return this;
   }
 
   ORMBuilder whereNotIn(
-      {@required String column, @required List<dynamic> values,
-      String condition = 'AND'}) {
+      {@required String column,
+      @required List<dynamic> values,
+      String condition = 'AND',
+      SubQueryCallback nested}) {
     _query.where(
         column: column,
         operator: 'NOT IN',
         values: values,
-        condition: condition);
+        condition: condition,
+        nested: _subQuery(nested));
     return this;
   }
 
-  ORMBuilder orWhereNotIn({@required String column, @required List<dynamic> values}) {
-    this.whereNotIn(column: column, values: values, condition: 'OR');
+  ORMBuilder orWhereNotIn(
+      {@required String column,
+      @required List<dynamic> values,
+      SubQueryCallback nested}) {
+    this.whereNotIn(
+        column: column, values: values, condition: 'OR', nested: nested);
     return this;
   }
 
@@ -283,7 +272,9 @@ class ORMBuilder {
   }
 
   ORMBuilder orHaving(
-      {@required String column, String operator = '=', @required dynamic value}) {
+      {@required String column,
+      String operator = '=',
+      @required dynamic value}) {
     this.having(
         column: column, operator: operator, value: value, condition: 'OR');
     return this;
@@ -333,5 +324,21 @@ class ORMBuilder {
     return str.isEmpty ? null : str;
   }
 
+  RawQueryBuilder _subQuery(SubQueryCallback nested) {
+    if (nested == null) return null;
+    final ORMBuilder builder = ORMBuilder();
+    nested(builder);
+    final RawQueryBuilder rawQuery = RawQueryBuilder(
+        columns: builder._getColumns(),
+        table: builder._getTable(),
+        wheres: builder._getWhere(),
+        orderBy: builder._getOrderBy(),
+        groupBy: builder._getGroupBy(),
+        limit: builder._getLimit(),
+        offset: builder._getOffset(),
+        having: builder._getHavings(),
+        values: builder._getWhereArgs());
 
+    return rawQuery;
+  }
 }

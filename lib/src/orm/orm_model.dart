@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database/connection.dart';
@@ -24,8 +23,7 @@ abstract class ORMModel extends ORMBuilder {
           this._migrate(db: db);
         },
         onUpgrade: (Database db, int old, int next) {
-          if(next > old)
-            this._migrate(db: db);
+          if (next > old) this._migrate(db: db);
         });
 
     Database database = connection.database;
@@ -38,13 +36,13 @@ abstract class ORMModel extends ORMBuilder {
     return [];
   }
 
-  Future<void> _migrate({ Database db }) async {
+  Future<void> _migrate({Database db}) async {
     final List migration = this.migration();
     final Migrate migrate = Migrate(migration);
     List<String> sqlStringList = migrate.create();
     await db
         .transaction((tran) async =>
-        sqlStringList.forEach((sql) async => await tran.execute(sql)))
-        .catchError((error) => throw('On transaction error: $error') );
+            sqlStringList.forEach((sql) async => await tran.execute(sql)))
+        .catchError((error) => throw ('On transaction error: $error'));
   }
 }

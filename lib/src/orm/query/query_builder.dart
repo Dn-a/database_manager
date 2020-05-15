@@ -1,3 +1,4 @@
+import 'raw_query_builder.dart';
 import 'package:flutter/foundation.dart';
 
 class QueryBuilder {
@@ -70,22 +71,25 @@ class QueryBuilder {
     return this;
   }
 
-  QueryBuilder where({
-    @required String column,
-    String operator = '=',
-    @required List<dynamic> values,
-    String condition = 'AND',
-    String nested
-  }) {
+  QueryBuilder where(
+      {@required String column,
+      String operator = '=',
+      @required List<dynamic> values,
+      String condition = 'AND',
+      RawQueryBuilder nested}) {
+    final String sqlNested = nested != null ? nested.getSQL() : '';
+    if ((column == null || values == null) && sqlNested.isEmpty) return this;
+
     _whereColumns.add({
       'column': column,
       'operator': operator,
       'condition': condition,
-      'argsSize': values.length.toString()
+      'argsSize': values.length.toString(),
+      'nested': sqlNested
     });
 
-    values.forEach((v) => _wheresArgs.add(v));
-
+    final args = nested != null ? nested.values : values;
+    _wheresArgs.addAll(args);
     return this;
   }
 
@@ -115,8 +119,7 @@ class QueryBuilder {
     return this;
   }
 
-  QueryBuilder subQuery(){
-
+  QueryBuilder subQuery() {
     return this;
   }
 
@@ -162,7 +165,7 @@ class QueryBuilder {
     int cnt = 0;
 
     _havings.forEach((grp) {
-      str.write('${grp['column']}');
+      str.write('`${grp['column']}`');
       str.write(' ');
       str.write(grp['operator']);
       str.write(' ');
@@ -191,26 +194,30 @@ class QueryBuilder {
     int cnt = 0;
 
     _whereColumns.forEach((clm) {
-      str.write('`${clm['column']}`');
-      str.write(' ');
-
-      if (clm['operator'] == 'IN' || clm['operator'] == 'NOT IN')
-        str.write(
-            _whereInGenerator(int.parse(clm['argsSize']), clm['operator']));
-      else
-        str.write('${clm['operator']} ?');
+      if (clm['nested'] != null && clm['nested'].isNotEmpty) {
+        str.write('(');
+        str.write(clm['nested']);
+        str.write(')');
+      } else {
+        str.write('`${clm['column']}`');
+        str.write(' ');
+        if (clm['operator'] == 'IN' || clm['operator'] == 'NOT IN')
+          str.write(
+              _whereInGenerator(int.parse(clm['argsSize']), clm['operator']));
+        else
+          str.write('${clm['operator']} ?');
+      }
 
       // inserts 'AND, OR' if where condition is > 1
       if (size > 1) {
         String cond = _whereColumns[++cnt]['condition'];
-
         str.write(' ');
         str.write(cond);
         str.write(' ');
-
         --size;
       }
     });
+
     return str.toString();
   }
 

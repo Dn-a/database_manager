@@ -8,7 +8,8 @@ import 'package:sqflite/sqflite.dart';
 
 typedef OnCreateCallback = void Function(Database db, int version);
 typedef OnConfigureCallback = void Function(Database db);
-typedef OnUpgradeCallback = void Function(Database db, int oldVersion, int newVersion);
+typedef OnUpgradeCallback = void Function(
+    Database db, int oldVersion, int newVersion);
 
 class Connection {
   static final Connection _this = Connection._();
