@@ -1,3 +1,8 @@
+## [0.0.3+1] - 2020-05-15.
+
+* General improvement of the code.
+* added the ability to create nested queries.
+
 ## [0.0.3] - 2020-05-2.
 
 * **Created the following model methods:**
