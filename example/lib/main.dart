@@ -137,14 +137,23 @@ class _MyHomePageState extends State<MyHomePage> {
         .catchError((e) => print(e));
     //print(ids);
     int cnt = await table1
-        .where(
+        /*.where(
             nested: (query) => query.where(
-                nested: (query) => query.where(nested: (query) => query
-                    //.where(column: 'email', operator: 'like', value: 'marios11%')
-
-                    ))
-            //.limit(1)
-            )
+                nested: (query) => query.where(
+                    nested: (query) => query
+                      .where(column: 'email', operator: 'like', value: 'marios11%')
+                    )
+                )
+            .limit(1)
+        )*/
+        .whereExists((query) => query
+          .from('users as s, table_1 as t')
+          .where(column: 's.id', value: '2')
+          .orWhereExists((query) => query
+              .from('users as s, table_1 as t')
+              .where(column: 's.id', value: '1')
+          )
+        )
         .where(column: 'name', operator: 'like', value: 'marios')
         .count();
     print(cnt);

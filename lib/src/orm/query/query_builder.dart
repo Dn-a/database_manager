@@ -48,13 +48,12 @@ class QueryBuilder {
   final List<String> _columns = [];
   String _table;
   bool _distinct = false;
-  final List joins = [];
-  final List<Map<String, String>> _whereColumns = [];
+  final List _joins = [];
+  final List<Map<String, dynamic>> _whereColumns = [];
   final List<dynamic> _wheresArgs = [];
   final List _groups = [];
   final List<Map<String, String>> _orders = [];
   final List<Map<String, dynamic>> _havings = [];
-  final List<Map<String, dynamic>> _subQueries = [];
   int _limit;
   int _offset;
   List unions;
@@ -71,7 +70,7 @@ class QueryBuilder {
     return this;
   }
 
-  QueryBuilder where(
+ /* QueryBuilder where(
       {@required String column,
       String operator = '=',
       @required List<dynamic> values,
@@ -90,6 +89,43 @@ class QueryBuilder {
 
     final args = nested != null ? nested.values : values;
     _wheresArgs.addAll(args);
+    return this;
+  }*/
+
+  QueryBuilder where(
+      {@required String column,
+        String operator = '=',
+        @required List<dynamic> values,
+        String condition = 'AND'}) {
+
+    if (column == null || values == null) return this;
+
+    _whereColumns.add({
+      'column': column,
+      'operator': operator,
+      'condition': condition,
+      'argsSize': values.length.toString()
+    });
+
+    _wheresArgs.addAll(values);
+    return this;
+  }
+
+  QueryBuilder whereNested({
+    RawQueryBuilder nested,
+    String condition = 'AND',
+    bool exists = false
+  }) {
+
+    if (nested==null || nested.getSQL().isEmpty) return this;
+
+    _whereColumns.add({
+      'condition': condition,
+      'nested': nested.getSQL(),
+      'exists': exists
+    });
+    _wheresArgs.addAll(nested.values);
+
     return this;
   }
 
@@ -165,7 +201,8 @@ class QueryBuilder {
     int cnt = 0;
 
     _havings.forEach((grp) {
-      str.write('`${grp['column']}`');
+      //str.write('`${grp['column']}`');
+      str.write('${grp['column']}');
       str.write(' ');
       str.write(grp['operator']);
       str.write(' ');
@@ -195,11 +232,13 @@ class QueryBuilder {
 
     _whereColumns.forEach((clm) {
       if (clm['nested'] != null && clm['nested'].isNotEmpty) {
+        if(clm['exists']) str.write('EXISTS');
         str.write('(');
         str.write(clm['nested']);
         str.write(')');
       } else {
-        str.write('`${clm['column']}`');
+        //str.write('`${clm['column']}`');
+        str.write('${clm['column']}');
         str.write(' ');
         if (clm['operator'] == 'IN' || clm['operator'] == 'NOT IN')
           str.write(

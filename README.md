@@ -23,7 +23,7 @@ import 'package:database_manager/database_manager.dart';
 class Table1 implements Migration {
   @override
   void up() {
-    Schema.create(tableName: 'table_1', callback: (Blueprint table) {
+    Schema.create('table_1', (Blueprint table) {
       table.integer('id').autoIncrement();
       table.string('name');
       table.string('email').unique();
@@ -31,7 +31,7 @@ class Table1 implements Migration {
       table.unsignedInteger('user_id').defaultValue(1);
     });
 
-    Schema.table(tableName: 'table_1', callback: (Blueprint table){
+    Schema.table('table_1', (Blueprint table){
       table.check(" name<>'mark' ")
             .andCheck("email = 'aa@bb.com'");
       table.foreign(columns: ['user_id']).references(idList: ['id']).on(

@@ -155,12 +155,19 @@ class ORMBuilder {
       dynamic value,
       String condition = 'AND',
       SubQueryCallback nested}) {
-    _query.where(
-        column: column,
-        operator: operator,
-        values: [value],
+
+    if(nested!=null)
+      _query.whereNested(
+        nested: _subQuery(nested),
         condition: condition,
-        nested: _subQuery(nested));
+      );
+    else
+      _query.where(
+          column: column,
+          operator: operator,
+          values: [value],
+          condition: condition
+      );
 
     return this;
   }
@@ -184,12 +191,18 @@ class ORMBuilder {
       @required List<dynamic> values,
       String condition = 'AND',
       SubQueryCallback nested}) {
-    _query.where(
-        column: column,
-        operator: 'IN',
-        values: values,
+    if(nested!=null)
+      _query.whereNested(
+        nested: _subQuery(nested),
         condition: condition,
-        nested: _subQuery(nested));
+      );
+    else
+      _query.where(
+          column: column,
+          operator: 'IN',
+          values: values,
+          condition: condition
+      );
     return this;
   }
 
@@ -207,12 +220,18 @@ class ORMBuilder {
       @required List<dynamic> values,
       String condition = 'AND',
       SubQueryCallback nested}) {
-    _query.where(
-        column: column,
-        operator: 'NOT IN',
-        values: values,
+    if(nested!=null)
+      _query.whereNested(
+        nested: _subQuery(nested),
         condition: condition,
-        nested: _subQuery(nested));
+      );
+    else
+      _query.where(
+          column: column,
+          operator: 'NOT IN',
+          values: values,
+          condition: condition
+      );
     return this;
   }
 
@@ -222,6 +241,28 @@ class ORMBuilder {
       SubQueryCallback nested}) {
     this.whereNotIn(
         column: column, values: values, condition: 'OR', nested: nested);
+    return this;
+  }
+
+  ORMBuilder whereExists( SubQueryCallback nested,
+      {String condition = 'AND'}) {
+
+    _query.whereNested(
+        condition: condition,
+        nested: _subQuery(nested),
+        exists: true
+    );
+
+    return this;
+  }
+
+  ORMBuilder orWhereExists(SubQueryCallback nested) {
+    _query.whereNested(
+        condition: 'OR',
+        nested: _subQuery(nested),
+        exists: true
+    );
+
     return this;
   }
 

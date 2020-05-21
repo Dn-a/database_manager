@@ -24,14 +24,14 @@ class Schema {
   }
 
   static create(
-      {@required String tableName, @required SchemaCallback callback}) {
+    String tableName, SchemaCallback callback) {
     Blueprint table = Blueprint();
     callback(table);
 
     _addTable(tableName: tableName, table: table);
   }
 
-  static table(String tableName, {@required SchemaCallback callback}) {
+  static table(String tableName, SchemaCallback callback) {
     assert(_tables[tableName] != null
         ? true
         : throw "The $tableName table does not exist");
