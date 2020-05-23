@@ -1,3 +1,8 @@
+## [0.0.3+2] - 2020-05-23.
+
+* General improvement of the code.
+* added exists operator.
+
 ## [0.0.3+1] - 2020-05-15.
 
 * General improvement of the code.

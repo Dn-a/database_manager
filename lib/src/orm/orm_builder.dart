@@ -155,12 +155,13 @@ class ORMBuilder {
       dynamic value,
       String condition = 'AND',
       SubQueryCallback nested}) {
-
     if(nested!=null)
       _query.whereNested(
-        nested: _subQuery(nested),
+        column: column,
+        operator: operator,
         condition: condition,
-      );
+        nested: _subQuery(nested)
+    );
     else
       _query.where(
           column: column,
@@ -168,7 +169,6 @@ class ORMBuilder {
           values: [value],
           condition: condition
       );
-
     return this;
   }
 
@@ -193,8 +193,10 @@ class ORMBuilder {
       SubQueryCallback nested}) {
     if(nested!=null)
       _query.whereNested(
-        nested: _subQuery(nested),
+        column: column,
+        operator: 'IN',
         condition: condition,
+        nested: _subQuery(nested)
       );
     else
       _query.where(
@@ -222,8 +224,10 @@ class ORMBuilder {
       SubQueryCallback nested}) {
     if(nested!=null)
       _query.whereNested(
-        nested: _subQuery(nested),
+        column: column,
+        operator: 'NOT IN',
         condition: condition,
+        nested: _subQuery(nested)
       );
     else
       _query.where(

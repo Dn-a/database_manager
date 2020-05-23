@@ -146,13 +146,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 )
             .limit(1)
         )*/
-        .whereNotExists((query) => query
-          .from('users as s, table_1 as t')
-          .where(column: 's.id', value: '2')
-          .orWhereNotExists((query) => query
-              .from('users as s, table_1 as t')
-              .where(column: 's.id', value: '2')
-          )
+        .whereIn(column:'user_id', values: ['2','1'], //nested: (query) => query
+          /*.from('users as s')
+          .select(['id'])
+          .where(column: 'id', value: '2')*/
         )
         .where(column: 'name', operator: 'like', value: 'marios')
         .count();
