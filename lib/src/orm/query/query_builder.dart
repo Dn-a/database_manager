@@ -70,28 +70,6 @@ class QueryBuilder {
     return this;
   }
 
- /* QueryBuilder where(
-      {@required String column,
-      String operator = '=',
-      @required List<dynamic> values,
-      String condition = 'AND',
-      RawQueryBuilder nested}) {
-    final String sqlNested = nested != null ? nested.getSQL() : '';
-    if ((column == null || values == null) && sqlNested.isEmpty) return this;
-
-    _whereColumns.add({
-      'column': column,
-      'operator': operator,
-      'condition': condition,
-      'argsSize': values.length.toString(),
-      'nested': sqlNested
-    });
-
-    final args = nested != null ? nested.values : values;
-    _wheresArgs.addAll(args);
-    return this;
-  }*/
-
   QueryBuilder where(
       {@required String column,
         String operator = '=',
@@ -113,6 +91,7 @@ class QueryBuilder {
 
   QueryBuilder whereNested({
     RawQueryBuilder nested,
+    String operator = '',
     String condition = 'AND',
     bool exists = false
   }) {
@@ -121,6 +100,7 @@ class QueryBuilder {
 
     _whereColumns.add({
       'condition': condition,
+      'operator': operator,
       'nested': nested.getSQL(),
       'exists': exists
     });
@@ -232,6 +212,10 @@ class QueryBuilder {
 
     _whereColumns.forEach((clm) {
       if (clm['nested'] != null && clm['nested'].isNotEmpty) {
+        if(clm['operator'].toString().isNotEmpty) {
+          str.write(clm['operator']);
+          str.write(' ');
+        }
         if(clm['exists']) str.write('EXISTS');
         str.write('(');
         str.write(clm['nested']);

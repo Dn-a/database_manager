@@ -246,23 +246,32 @@ class ORMBuilder {
 
   ORMBuilder whereExists( SubQueryCallback nested,
       {String condition = 'AND'}) {
-
     _query.whereNested(
         condition: condition,
         nested: _subQuery(nested),
         exists: true
     );
-
     return this;
   }
 
   ORMBuilder orWhereExists(SubQueryCallback nested) {
+    this.whereExists(nested, condition: 'OR');
+    return this;
+  }
+
+  ORMBuilder whereNotExists( SubQueryCallback nested,
+      {String condition = 'AND'}) {
     _query.whereNested(
-        condition: 'OR',
+        condition: condition,
+        operator: 'NOT',
         nested: _subQuery(nested),
         exists: true
     );
+    return this;
+  }
 
+  ORMBuilder orWhereNotExists( SubQueryCallback nested) {
+    this.whereNotExists(nested, condition: 'OR');
     return this;
   }
 
