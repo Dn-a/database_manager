@@ -27,7 +27,7 @@ class RawQueryBuilder {
     str.write(_DQL);
     str.write(_wheres);
     str.write(_groupBy);
-    str.write(_having());
+    str.write(_having);
     str.write(_orderBy);
     str.write(_limitOffset);
     //print('rawQueryBuilder: ${str.length}');
@@ -80,7 +80,7 @@ class RawQueryBuilder {
     return str.toString();
   }
 
-  String _having() {
+  String get _having {
     return having == null ? '' : 'HAVING $having ';
   }
 }
