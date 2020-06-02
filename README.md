@@ -10,6 +10,9 @@ Add this to your package's pubspec.yaml file:
 dependencies:
   database_manager: "^0.0.3+1"
 ```
+[Sqlite](https://pub.dev/packages/sqflite), 
+[Path](https://pub.dev/packages/path) and 
+[Path Provider](https://pub.dev/packages/path_provider) dependencies must be installed.
 
 ## Available features
 
