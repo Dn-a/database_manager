@@ -23,8 +23,7 @@ class Schema {
     return list;
   }
 
-  static create(
-    String tableName, SchemaCallback callback) {
+  static create(String tableName, SchemaCallback callback) {
     Blueprint table = Blueprint();
     callback(table);
 

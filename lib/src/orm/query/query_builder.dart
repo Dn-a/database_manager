@@ -72,10 +72,9 @@ class QueryBuilder {
 
   QueryBuilder where(
       {@required String column,
-        String operator = '=',
-        @required List<dynamic> values,
-        String condition = 'AND'}) {
-
+      String operator = '=',
+      @required List<dynamic> values,
+      String condition = 'AND'}) {
     if (column == null || values == null) return this;
 
     _whereColumns.add({
@@ -84,20 +83,25 @@ class QueryBuilder {
       'condition': condition,
       'argsSize': values.length
     });
-
     _wheresArgs.addAll(values);
+
     return this;
   }
 
-  QueryBuilder whereNested({
-    String column,
-    String operator = '',
-    String condition = 'AND',
-    RawQueryBuilder nested,
-    bool exists = false
-  }) {
+  QueryBuilder whereRaw(String raw, {List bindings, String condition = 'AND'}) {
+    _whereColumns.add({'raw': raw, 'condition': condition});
+    if (bindings != null) _wheresArgs.addAll(bindings);
 
-    if (nested==null || nested.getSQL().isEmpty) return this;
+    return this;
+  }
+
+  QueryBuilder whereNested(
+      {String column,
+      String operator = '',
+      String condition = 'AND',
+      RawQueryBuilder nested,
+      bool exists = false}) {
+    if (nested == null || nested.getSQL().isEmpty) return this;
 
     _whereColumns.add({
       'column': column,
@@ -213,40 +217,8 @@ class QueryBuilder {
     int cnt = 0;
 
     _whereColumns.forEach((clm) {
-      final String column = clm['column'] == null ? '' : clm['column'] ;
-      final String operator = clm['operator'] == null ? '' : clm['operator'];
-      final String nested = clm['nested'] == null ? '' : clm['nested'];
-      final bool exists = clm['exists'] == null ? false : clm['exists'];
-
-      assert(
-        (column.isNotEmpty && operator.isNotEmpty && !exists) ||
-        (column.isEmpty && exists)
-        ? true : throw 'The column field and the operator field cannot be empty.');
-
-      if(column.isNotEmpty){
-        str.write(column);
-        str.write(' ');
-      }
-
-      if ( (operator == 'IN' || operator == 'NOT IN') && nested.isEmpty )
-        str.write(
-            _whereInGenerator(clm['argsSize'], clm['operator']));
-
-      else if( operator.isNotEmpty && column.isNotEmpty ) {
-        str.write(operator);
-        str.write(' ');
-        if(nested.isEmpty)
-          str.write('?');
-      }
-
-      if (nested.isNotEmpty) {
-        if(exists) str.write('EXISTS ');
-        str.write('(');
-        str.write(nested);
-        str.write(')');
-      }
-
-        // inserts 'AND, OR' if where condition is > 1
+      str.write(_prepareWhereStatement(clm));
+      // inserts 'AND, OR' if where condition is > 1
       if (size > 1) {
         String cond = _whereColumns[++cnt]['condition'];
         str.write(' ');
@@ -254,9 +226,7 @@ class QueryBuilder {
         str.write(' ');
         --size;
       }
-
     });
-
     return str.toString();
   }
 
@@ -264,8 +234,48 @@ class QueryBuilder {
     return _wheresArgs;
   }
 
+  String _prepareWhereStatement(Map<String, dynamic> clm) {
+    final StringBuffer str = StringBuffer();
+    final String column = clm['column'] == null ? '' : clm['column'];
+    final String operator = clm['operator'] == null ? '' : clm['operator'];
+    final String nested = clm['nested'] == null ? '' : clm['nested'];
+    final String raw = clm['raw'] == null ? '' : clm['raw'];
+    final bool exists = clm['exists'] == null ? false : clm['exists'];
+
+    assert((column.isNotEmpty && operator.isNotEmpty && !exists) ||
+            (column.isEmpty && nested.isNotEmpty) ||
+            (column.isEmpty && raw.isNotEmpty)
+        ? true
+        : throw 'The column field and the operator field cannot be empty.');
+
+    if (raw.isNotEmpty)
+      str.write(raw);
+    else {
+      if (column.isNotEmpty) {
+        str.write(column);
+        str.write(' ');
+      }
+
+      if ((operator == 'IN' || operator == 'NOT IN') && nested.isEmpty)
+        str.write(_whereInBindingGenerator(clm['argsSize'], clm['operator']));
+      else if (operator.isNotEmpty && column.isNotEmpty) {
+        str.write(operator);
+        str.write(' ');
+        if (nested.isEmpty) str.write('?');
+      }
+
+      if (nested.isNotEmpty) {
+        if (exists) str.write('EXISTS ');
+        str.write('(');
+        str.write(nested);
+        str.write(')');
+      }
+    }
+    return str.toString();
+  }
+
   /// Generate where IN ---> IN (?,?,..)
-  String _whereInGenerator(int size, String operator) {
+  String _whereInBindingGenerator(int size, String operator) {
     StringBuffer str = StringBuffer();
 
     str.write('$operator (');

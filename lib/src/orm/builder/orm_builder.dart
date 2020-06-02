@@ -9,13 +9,9 @@ part 'operators_builder.dart';
 
 typedef SubQueryCallback = void Function(OperatorBuilder query);
 
-//Recursive Generics
-
 class ORMBuilder extends OperatorBuilder<ORMBuilder> {
-
   final String tableName = '';
   Database _connection;
-
 
   /// The same [ORMBuilder] instance can be used to perform different queries.
   /// After an insert, an update or a get it is necessary to perform a reset
@@ -135,5 +131,4 @@ class ORMBuilder extends OperatorBuilder<ORMBuilder> {
         await this.select(['avg($column) $alias']).limit(1).get();
     return max.first;
   }
-
 }

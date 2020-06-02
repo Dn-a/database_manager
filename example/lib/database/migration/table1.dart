@@ -4,12 +4,12 @@ class Table1 implements Migration {
   @override
   void up() {
     Schema.create('table_1', (Blueprint table) {
-          table.integer('id').autoIncrement();
-          table.string('name');
-          table.string('email').unique();
-          table.string('cell').nullable();
-          table.integer('user_id').defaultValue(1);
-        });
+      table.integer('id').autoIncrement();
+      table.string('name');
+      table.string('email').unique();
+      table.string('cell').nullable();
+      table.integer('user_id').defaultValue(1);
+    });
 
     Schema.table('table_1', (Blueprint table) {
       table.check(" name <> 'mark' ").check("email != 'email@email.com'");

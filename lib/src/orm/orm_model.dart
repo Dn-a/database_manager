@@ -1,11 +1,9 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'builder/orm_builder.dart';
 import '../database/connection.dart';
 import '../migrations/migrate.dart';
 import '../migrations/migration_interface.dart';
-
 
 abstract class ORMModel extends ORMBuilder {
   @protected
